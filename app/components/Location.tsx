@@ -4,7 +4,7 @@ interface LocationProps {}
 
 const Location: FunctionComponent<LocationProps> = () => {
   return (
-    <section className="py-16 bg-[#F5F5F5]">
+    <section id="location" className="py-16 bg-[#F5F5F5]">
       <div className="container mx-auto px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">Local do Evento</h2>
         <p className="text-gray-700 mb-8">

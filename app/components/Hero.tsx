@@ -8,6 +8,7 @@ interface HeroProps {
 const Hero: FunctionComponent<HeroProps> = ({ onOpenModal }) => {
   return (
     <section
+      id="hero"
       className="relative h-screen flex items-center justify-center text-center bg-cover bg-center"
       style={{ backgroundImage: "url('/assets/hero-bg.png')" }}
     >
