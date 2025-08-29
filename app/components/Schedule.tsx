@@ -1,3 +1,4 @@
+"use client";
 import { FunctionComponent } from "react";
 
 interface ScheduleProps {}
@@ -25,26 +26,34 @@ const Schedule: FunctionComponent<ScheduleProps> = () => {
   ];
 
   return (
-    <section id="schedule" className="py-16 bg-[#F5F5F5]">
-      <div className="container mx-auto px-6 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12">
+    <section
+      id="schedule"
+      className="py-20 bg-gradient-to-b from-green-900 via-green-800 to-green-900 relative overflow-hidden"
+    >
+      {/* Overlay suave */}
+      <div className="absolute inset-0 bg-black/20 pointer-events-none"></div>
+
+      <div className="container mx-auto px-6 relative z-10 text-center">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-green-400 drop-shadow-lg mb-12 animate-fadeInUp">
           Programação do Congresso
         </h2>
 
-        <div className="flex flex-col md:flex-row gap-6 justify-center">
-          {program.map((item) => (
+        <div className="flex flex-col md:flex-row gap-6 justify-center animate-fadeInUp delay-100">
+          {program.map((item, index) => (
             <div
               key={item.day}
-              className="bg-white rounded-2xl shadow-lg p-6 flex-1 hover:scale-105 transition-transform"
+              className="bg-gradient-to-br from-green-600 to-green-500 text-white rounded-3xl shadow-2xl p-6 flex-1 transform hover:scale-105 transition-all duration-500 cursor-pointer"
             >
-              <div className="text-[#353929] font-bold text-xl mb-2">
+              <div className="font-bold text-xl md:text-2xl mb-2">
                 {item.day}
               </div>
-              <div className="text-gray-700 mb-2 text-xl font-bold">
+              <div className="font-extrabold text-2xl md:text-3xl mb-2">
                 {item.date}
               </div>
-              <h3 className="text-2xl font-semibold mb-2">{item.title}</h3>
-              <p className="text-gray-700">{item.activity}</p>
+              <h3 className="text-2xl md:text-3xl font-semibold mb-2">
+                {item.title}
+              </h3>
+              <p className="text-lg md:text-xl">{item.activity}</p>
             </div>
           ))}
         </div>

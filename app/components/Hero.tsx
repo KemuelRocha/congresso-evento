@@ -12,25 +12,30 @@ const Hero: FunctionComponent<HeroProps> = ({ onOpenModal }) => {
       className="relative h-screen flex items-center justify-center text-center bg-cover bg-center"
       style={{ backgroundImage: "url('/assets/hero-bg.png')" }}
     >
-      {/* Overlay escuro para contraste do texto */}
-      <div className="absolute inset-0 bg-black opacity-50"></div>
+      {/* Overlay degradê para melhor contraste */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/40"></div>
 
-      <div className="relative z-10 container mx-auto px-6">
-        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+      <div className="relative z-10 container mx-auto px-6 flex flex-col items-center justify-center">
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-green-400 mb-6 animate-fadeInUp">
           Congresso de Jovens 2025
         </h1>
-        <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-2xl mx-auto">
-          Seja bem-vindo ao Site Oficial do Congresso de Jovens 2025! Participe
-          do <strong>Grande Coral de Jovens</strong> e louve a Deus junto com
-          jovens da nossa filial. As inscrições estão abertas de{" "}
-          <strong>01/01/2025 a 31/01/2025</strong>.
+
+        <p className="text-base md:text-lg lg:text-xl text-gray-200 mb-8 max-w-3xl mx-auto animate-fadeInUp delay-100">
+          Seja bem-vindo ao Site Oficial do{" "}
+          <strong>Congresso de Jovens 2025</strong>! Participe do{" "}
+          <strong>Grande Coral de Jovens</strong> e louve a Deus junto com
+          jovens da nossa filial.
+          <br />
+          As inscrições estão abertas de{" "}
+          <strong>01/09/2025 a 31/09/2025</strong>.
+          <br />
           <strong>Não perca essa oportunidade</strong> de fazer parte desse
           momento inesquecível!
         </p>
 
         <button
           onClick={onOpenModal}
-          className="inline-block bg-[#716353] text-white px-8 py-3 rounded-2xl shadow hover:bg-[#353929] transition cursor-pointer"
+          className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-full shadow-2xl transform hover:-translate-y-1 transition-all animate-fadeInUp delay-200 cursor-pointer"
         >
           Inscreva-se no Coral
         </button>

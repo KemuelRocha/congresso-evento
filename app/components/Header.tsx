@@ -1,4 +1,3 @@
-// components/Header.tsx
 "use client";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
@@ -14,20 +13,23 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
   ];
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white shadow">
+    <header className="fixed top-0 left-0 w-full z-50 bg-white/70 backdrop-blur-md shadow-md transition-colors">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
         {/* Logo / Nome do Evento */}
-        <a href="#hero" className="text-xl font-bold text-[#353929]">
+        <a
+          href="#hero"
+          className="text-2xl md:text-3xl font-extrabold text-green-700 hover:text-green-600 transition-colors"
+        >
           Congresso Jovens 2025
         </a>
 
         {/* Menu Desktop */}
-        <nav className="hidden md:flex space-x-8">
+        <nav className="hidden md:flex space-x-10">
           {navItems.map((item) => (
             <a
               key={item.label}
               href={item.href}
-              className="text-[#353929] hover:text-[#716353] transition-colors"
+              className="text-green-800 font-medium hover:text-green-600 transition-colors"
             >
               {item.label}
             </a>
@@ -37,7 +39,7 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
         {/* Botão de Inscrição */}
         <button
           onClick={onOpenModal}
-          className="hidden md:inline-block bg-[#716353] text-white px-5 py-2 rounded-2xl shadow hover:bg-[#353929] transition cursor-pointer"
+          className="hidden md:inline-block bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer"
         >
           Inscreva-se
         </button>
@@ -45,21 +47,21 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
         {/* Botão Mobile */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-[#353929] focus:outline-none"
+          className="md:hidden text-green-800 focus:outline-none"
         >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+          {isOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
       </div>
 
       {/* Menu Mobile */}
       {isOpen && (
-        <div className="md:hidden bg-white shadow-inner">
-          <nav className="flex flex-col items-center py-4 space-y-4">
+        <div className="md:hidden bg-white/90 backdrop-blur-md shadow-lg animate-slideDown">
+          <nav className="flex flex-col items-center py-6 space-y-4">
             {navItems.map((item) => (
               <a
                 key={item.label}
                 href={item.href}
-                className="text-[#353929] hover:text-[#716353] transition-colors"
+                className="text-green-800 font-medium hover:text-green-600 transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 {item.label}
@@ -70,7 +72,7 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
                 onOpenModal();
                 setIsOpen(false);
               }}
-              className="bg-[#716353] text-white px-5 py-2 rounded-2xl shadow hover:bg-[#353929] transition cursor-pointer"
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer"
             >
               Inscreva-se
             </button>

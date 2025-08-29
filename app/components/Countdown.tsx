@@ -43,13 +43,13 @@ const Countdown: FunctionComponent<CountdownProps> = () => {
   if (!mounted) return null;
 
   return (
-    <section className="py-16 bg-[#F5F5F5]">
+    <section className="py-16 bg-gradient-to-b from-green-50 to-green-100">
       <div className="container mx-auto text-center px-4">
-        <h2 className="text-3xl md:text-4xl font-bold mb-8">
+        <h2 className="text-3xl md:text-4xl font-extrabold mb-8 text-green-700 animate-fadeIn">
           Contagem regressiva!
         </h2>
 
-        <div className="inline-flex flex-wrap justify-center bg-[#353929] text-white rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+        <div className="inline-flex flex-wrap justify-center bg-green-600 text-white rounded-2xl shadow-xl overflow-hidden animate-fadeInUp">
           {["Dias", "Horas", "Minutos", "Segundos"].map((label, i) => {
             const value = [
               timeLeft.days,
@@ -60,17 +60,18 @@ const Countdown: FunctionComponent<CountdownProps> = () => {
             return (
               <div
                 key={label}
-                className="flex flex-col items-center px-6 py-4 sm:px-8 sm:py-6 border-gray-700
-                       border-b sm:border-b-0 sm:border-r last:border-r-0"
+                className="flex flex-col items-center px-6 py-4 sm:px-8 sm:py-6 border-b sm:border-b-0 sm:border-r last:border-r-0 border-green-500"
               >
-                <div className="text-4xl sm:text-5xl font-bold">{value}</div>
+                <div className="text-4xl sm:text-5xl font-extrabold drop-shadow-lg transition-all duration-500">
+                  {value}
+                </div>
                 <div className="uppercase text-sm">{label}</div>
               </div>
             );
           })}
         </div>
 
-        <p className="mt-6 text-gray-700 text-lg px-2 sm:px-0">
+        <p className="mt-6 text-green-800 text-lg px-2 sm:px-0 animate-fadeIn delay-100">
           Prepare o seu coração para um evento inesquecível!
         </p>
       </div>
