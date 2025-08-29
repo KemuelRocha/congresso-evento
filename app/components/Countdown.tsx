@@ -35,6 +35,8 @@ const Countdown: FunctionComponent<CountdownProps> = () => {
       });
     }, 1000);
 
+    setMounted(true);
+
     return () => clearInterval(timer);
   }, []);
 
@@ -65,11 +67,6 @@ const Countdown: FunctionComponent<CountdownProps> = () => {
             <div className="uppercase text-sm">Segundos</div>
           </div>
         </div>
-
-        <p className="mt-6 text-gray-700 text-lg">
-          28 a 30 de Novembro de 2025 - Igreja Evangélica Assembleia de Deus em
-          Pernambuco, Filial em Petrolina
-        </p>
       </div>
     </section>
   );
