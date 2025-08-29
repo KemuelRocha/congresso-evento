@@ -58,17 +58,17 @@ export default function RegisterModal({
     }
   };
 
-  // Validação completa
-  const isValid =
-    nome.trim() !== "" &&
-    sexo !== "" &&
-    idade !== null &&
-    idade >= 14 &&
-    lideranca !== "" &&
-    whatsapp.trim() !== "" &&
-    area !== null &&
-    (!congregacoes.length || congregacao !== "") &&
-    fardamentoCiente;
+  const isValid = (() => {
+    if (!nome.trim()) return false;
+    if (!sexo) return false;
+    if (idade === null || idade < 14) return false;
+    if (!lideranca) return false; // já tem valor padrão, então sempre true
+    if (!whatsapp.trim()) return false;
+    if (area === null) return false;
+    if (!fardamentoCiente) return false;
+
+    return true;
+  })();
 
   return confirmation ? (
     <ConfirmacaoInscricao
