@@ -274,7 +274,7 @@ export default function RegisterModal({
         <button
           type="submit"
           disabled={!isValid}
-          className="w-full rounded-md bg-blue-600 text-white p-2 disabled:bg-gray-400"
+          className="w-full rounded-md bg-blue-600 text-white p-2 disabled:bg-gray-400 cursor-pointer"
           onClick={handleSubmit}
         >
           Enviar Inscrição

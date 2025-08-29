@@ -30,7 +30,7 @@ const Hero: FunctionComponent<HeroProps> = ({ onOpenModal }) => {
 
         <button
           onClick={onOpenModal}
-          className="inline-block bg-[#716353] text-white px-8 py-3 rounded-2xl shadow hover:bg-[#353929] transition"
+          className="inline-block bg-[#716353] text-white px-8 py-3 rounded-2xl shadow hover:bg-[#353929] transition cursor-pointer"
         >
           Inscreva-se no Coral
         </button>

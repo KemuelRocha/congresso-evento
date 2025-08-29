@@ -37,7 +37,7 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
         {/* Botão de Inscrição */}
         <button
           onClick={onOpenModal}
-          className="hidden md:inline-block bg-[#716353] text-white px-5 py-2 rounded-2xl shadow hover:bg-[#353929] transition"
+          className="hidden md:inline-block bg-[#716353] text-white px-5 py-2 rounded-2xl shadow hover:bg-[#353929] transition cursor-pointer"
         >
           Inscreva-se
         </button>
@@ -70,7 +70,7 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
                 onOpenModal();
                 setIsOpen(false);
               }}
-              className="bg-[#716353] text-white px-5 py-2 rounded-2xl shadow hover:bg-[#353929] transition"
+              className="bg-[#716353] text-white px-5 py-2 rounded-2xl shadow hover:bg-[#353929] transition cursor-pointer"
             >
               Inscreva-se
             </button>

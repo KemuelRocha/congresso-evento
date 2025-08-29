@@ -73,12 +73,12 @@ export function ConfirmacaoInscricao({
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
         <button
           onClick={handleDownloadPDF}
-          className="px-5 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition"
+          className="px-5 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition cursor-pointer flex items-center justify-center gap-2"
         >
           📄 Baixar PDF
         </button>
         <button
-          className="px-5 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition"
+          className="px-5 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition cursor-pointer"
           onClick={onClose}
         >
           Fechar
