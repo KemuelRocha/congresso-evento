@@ -44,29 +44,35 @@ const Countdown: FunctionComponent<CountdownProps> = () => {
 
   return (
     <section className="py-16 bg-[#F5F5F5]">
-      <div className="container mx-auto text-center">
+      <div className="container mx-auto text-center px-4">
         <h2 className="text-3xl md:text-4xl font-bold mb-8">
           Contagem regressiva!
         </h2>
 
-        <div className="inline-flex bg-[#353929] text-white rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
-          <div className="px-8 py-6 border-r border-gray-700">
-            <div className="text-5xl font-bold">{timeLeft.days}</div>
-            <div className="uppercase text-sm">Dias</div>
-          </div>
-          <div className="px-8 py-6 border-r border-gray-700">
-            <div className="text-5xl font-bold">{timeLeft.hours}</div>
-            <div className="uppercase text-sm">Horas</div>
-          </div>
-          <div className="px-8 py-6 border-r border-gray-700">
-            <div className="text-5xl font-bold">{timeLeft.minutes}</div>
-            <div className="uppercase text-sm">Minutos</div>
-          </div>
-          <div className="px-8 py-6">
-            <div className="text-5xl font-bold">{timeLeft.seconds}</div>
-            <div className="uppercase text-sm">Segundos</div>
-          </div>
+        <div className="inline-flex flex-wrap justify-center bg-[#353929] text-white rounded-2xl shadow-xl overflow-hidden animate-fadeIn">
+          {["Dias", "Horas", "Minutos", "Segundos"].map((label, i) => {
+            const value = [
+              timeLeft.days,
+              timeLeft.hours,
+              timeLeft.minutes,
+              timeLeft.seconds,
+            ][i];
+            return (
+              <div
+                key={label}
+                className="flex flex-col items-center px-6 py-4 sm:px-8 sm:py-6 border-gray-700
+                       border-b sm:border-b-0 sm:border-r last:border-r-0"
+              >
+                <div className="text-4xl sm:text-5xl font-bold">{value}</div>
+                <div className="uppercase text-sm">{label}</div>
+              </div>
+            );
+          })}
         </div>
+
+        <p className="mt-6 text-gray-700 text-lg px-2 sm:px-0">
+          Prepare o seu coração para um evento inesquecível!
+        </p>
       </div>
     </section>
   );
