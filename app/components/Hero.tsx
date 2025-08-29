@@ -1,37 +1,54 @@
 "use client";
+
 import { FunctionComponent } from "react";
+import { useInscricoesCount } from "../hooks/useInscricoesCount";
 
 interface HeroProps {
   onOpenModal: () => void;
 }
 
 const Hero: FunctionComponent<HeroProps> = ({ onOpenModal }) => {
+  const count = useInscricoesCount();
+
   return (
     <section
       id="hero"
-      className="relative h-screen flex items-center justify-center text-center bg-cover bg-center"
+      className="relative h-screen flex flex-col items-center justify-center text-center bg-cover bg-center"
       style={{ backgroundImage: "url('/assets/hero-bg.png')" }}
     >
-      {/* Overlay degradê para melhor contraste */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/40"></div>
 
       <div className="relative z-10 container mx-auto px-6 flex flex-col items-center justify-center">
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-green-400 mb-6 animate-fadeInUp">
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-green-400 mb-4 animate-fadeInUp">
           Congresso de Jovens 2025
         </h1>
 
-        <p className="text-base md:text-lg lg:text-xl text-gray-200 mb-8 max-w-3xl mx-auto animate-fadeInUp delay-100">
+        <p className="text-base md:text-lg lg:text-xl text-gray-200 mb-6 max-w-3xl mx-auto animate-fadeInUp delay-100">
           Seja bem-vindo ao Site Oficial do{" "}
           <strong>Congresso de Jovens 2025</strong>! Participe do{" "}
           <strong>Grande Coral de Jovens</strong> e louve a Deus junto com
           jovens da nossa filial.
           <br />
-          As inscrições estão abertas de{" "}
-          <strong>01/09/2025 a 31/09/2025</strong>.
-          <br />
-          <strong>Não perca essa oportunidade</strong> de fazer parte desse
-          momento inesquecível!
+          Inscrições abertas de <strong>01/09/2025 a 31/09/2025</strong>.
         </p>
+
+        <div className="flex flex-col md:flex-row items-center gap-4 mb-6 animate-fadeInUp delay-150">
+          {/* Inscrições confirmadas */}
+          <div className="flex items-center gap-2 bg-gray-800 text-white font-semibold px-4 py-2 rounded-full shadow-md text-sm md:text-base">
+            <span>✅</span>
+            {count !== null
+              ? `${count} ${
+                  count === 1 ? "inscrição" : "inscrições"
+                } confirmada${count === 1 ? "" : "s"}`
+              : "Carregando..."}
+          </div>
+
+          {/* Vagas restantes */}
+          <div className="flex items-center gap-2 bg-gray-700 text-white font-semibold px-4 py-2 rounded-full shadow-md text-sm md:text-base">
+            <span>⏳</span>
+            Restam {1500 - (count || 0)} vagas
+          </div>
+        </div>
 
         <button
           onClick={onOpenModal}
