@@ -41,6 +41,10 @@ const congregacoes = [
   },
   {
     area: 2,
+    congregacao: "AREIA BRANCA II",
+  },
+  {
+    area: 2,
     congregacao: "FERNANDO IDALINO I",
   },
   {

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { areas } from "../mock/areas.mock";
 import { Modal } from "./ui/Modal";
 import { salvarInscricao } from "../services/salvarInscricao";
+import { ConfirmacaoInscricao } from "./ConfirmacaoInscricao";
 
 export default function RegisterModal({
   isOpen,
@@ -22,6 +23,8 @@ export default function RegisterModal({
   const [fardamentoCiente, setFardamentoCiente] = useState(false);
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
 
+  const [confirmation, setConfirmation] = useState<string | null>(null);
+
   const congregacoes = area ? areas[area]?.congregacoes || [] : [];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,11 +40,10 @@ export default function RegisterModal({
       fardamentoCiente,
     };
 
-    const success = await salvarInscricao(formData);
+    const { success, codigo } = await salvarInscricao(formData);
 
-    if (success) {
-      alert("Inscrição enviada com sucesso!");
-      onClose();
+    if (success && codigo) {
+      setConfirmation(codigo);
       // resetar form
       setNome("");
       setSexo("");
@@ -68,7 +70,15 @@ export default function RegisterModal({
     (!congregacoes.length || congregacao !== "") &&
     fardamentoCiente;
 
-  return (
+  return confirmation ? (
+    <ConfirmacaoInscricao
+      codigo={confirmation}
+      onClose={() => {
+        setConfirmation(null);
+        onClose();
+      }}
+    />
+  ) : (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
