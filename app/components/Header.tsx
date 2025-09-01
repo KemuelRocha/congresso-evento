@@ -20,7 +20,7 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
           href="#hero"
           className="text-2xl md:text-3xl font-extrabold text-green-700 hover:text-green-600 transition-colors"
         >
-          Congresso Jovens 2025
+          CJ/2025
         </a>
 
         {/* Menu Desktop */}
