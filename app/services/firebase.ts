@@ -2,16 +2,15 @@ import { initializeApp, getApps } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAbnHwoi2Vdj-sAru1p8o7N0IUCtt0GQ4k",
-  authDomain: "inscricoes-congresso.firebaseapp.com",
-  projectId: "inscricoes-congresso",
-  storageBucket: "inscricoes-congresso.firebasestorage.app",
-  messagingSenderId: "219856522978",
-  appId: "1:219856522978:web:7169bb208337b5480118bb",
-  measurementId: "G-PF8Y84854H",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Inicializa apenas se não houver apps
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 
 export const db = getFirestore(app);

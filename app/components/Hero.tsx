@@ -1,7 +1,9 @@
 "use client";
 
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { useInscricoesCount } from "../hooks/useInscricoesCount";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../services/firebase";
 
 interface HeroProps {
   onOpenModal: () => void;
@@ -9,7 +11,21 @@ interface HeroProps {
 
 const Hero: FunctionComponent<HeroProps> = ({ onOpenModal }) => {
   const count = useInscricoesCount();
+  const [totalVagas, setTotalVagas] = useState<number | null>(null);
 
+  useEffect(() => {
+    const fetchTotal = async () => {
+      const ref = doc(db, "vagas", "total");
+      const snapshot = await getDoc(ref);
+
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setTotalVagas(data.valor);
+      }
+    };
+
+    fetchTotal();
+  }, []);
   return (
     <section
       id="hero"
@@ -46,7 +62,11 @@ const Hero: FunctionComponent<HeroProps> = ({ onOpenModal }) => {
           {/* Vagas restantes */}
           <div className="flex items-center gap-2 bg-gray-700 text-white font-semibold px-4 py-2 rounded-full shadow-md text-sm md:text-base">
             <span>⏳</span>
-            Restam {1500 - (count || 0)} vagas
+            Restam{" "}
+            {totalVagas !== null
+              ? totalVagas - (count || 0)
+              : "Carregando..."}{" "}
+            vagas
           </div>
         </div>
 
