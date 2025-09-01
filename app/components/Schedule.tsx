@@ -1,9 +1,7 @@
 "use client";
 import { FunctionComponent } from "react";
 
-interface ScheduleProps {}
-
-const Schedule: FunctionComponent<ScheduleProps> = () => {
+const Schedule: FunctionComponent = () => {
   const program = [
     {
       day: "Primeiro Dia",

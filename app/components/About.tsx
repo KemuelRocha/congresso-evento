@@ -5,9 +5,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
 
-interface AboutProps {}
-
-const About: FunctionComponent<AboutProps> = () => {
+const About: FunctionComponent = () => {
   const images = [
     "/assets/congresso1.jpg",
     "/assets/congresso2.jpg",

@@ -1,9 +1,7 @@
 "use client";
 import { FunctionComponent, useEffect, useState } from "react";
 
-interface CountdownProps {}
-
-const Countdown: FunctionComponent<CountdownProps> = () => {
+const Countdown: FunctionComponent = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,

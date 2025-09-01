@@ -1,9 +1,7 @@
 "use client";
 import { FunctionComponent } from "react";
 
-interface FooterProps {}
-
-const Footer: FunctionComponent<FooterProps> = () => {
+const Footer: FunctionComponent = () => {
   return (
     <footer className="py-12 bg-gradient-to-t from-green-900 via-green-800 to-green-900 text-gray-200 relative overflow-hidden">
       {/* Overlay leve */}

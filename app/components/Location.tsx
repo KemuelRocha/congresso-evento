@@ -1,9 +1,7 @@
 "use client";
 import { FunctionComponent } from "react";
 
-interface LocationProps {}
-
-const Location: FunctionComponent<LocationProps> = () => {
+const Location: FunctionComponent = () => {
   return (
     <section
       id="location"

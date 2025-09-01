@@ -33,6 +33,8 @@ interface Inscricao {
   congregacao: string;
   lideranca: string;
   whatsapp: string;
+  fardamentoCiente: boolean;
+  cartaoMembro: string;
 }
 
 export default function AdminDashboard() {
@@ -68,7 +70,7 @@ export default function AdminDashboard() {
       const data: Inscricao[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-      })) as any;
+      })) as Inscricao[];
       setInscricoes(data);
     };
 
