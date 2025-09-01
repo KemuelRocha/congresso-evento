@@ -36,6 +36,10 @@ interface Inscricao {
 }
 
 export default function AdminDashboard() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [user, setUser] = useState("");
+  const [pass, setPass] = useState("");
+
   const [inscricoes, setInscricoes] = useState<Inscricao[]>([]);
   const [totalVagas, setTotalVagas] = useState<number | null>(null);
 
@@ -142,6 +146,45 @@ export default function AdminDashboard() {
     saveAs(blob, "inscricoes.csv");
   };
 
+  const handleLogin = () => {
+    if (
+      user === process.env.NEXT_PUBLIC_ADMIN_USER &&
+      pass === process.env.NEXT_PUBLIC_ADMIN_PASS
+    ) {
+      setLoggedIn(true);
+    } else {
+      alert("Usuário ou senha incorretos");
+    }
+  };
+
+  if (!loggedIn) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-2xl mb-4">Login Administrativo</h1>
+        <input
+          type="text"
+          placeholder="Usuário"
+          value={user}
+          onChange={(e) => setUser(e.target.value)}
+          className="border rounded p-2 mb-2"
+        />
+        <input
+          type="password"
+          placeholder="Senha"
+          value={pass}
+          onChange={(e) => setPass(e.target.value)}
+          className="border rounded p-2 mb-2"
+        />
+        <button
+          onClick={handleLogin}
+          className="bg-blue-600 text-white rounded px-4 py-2"
+        >
+          Entrar
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
       <h1 className="text-3xl font-bold mb-6">📊 Dashboard de Inscrições</h1>
@@ -149,7 +192,7 @@ export default function AdminDashboard() {
       {/* Botão de Exportar */}
       <button
         onClick={exportCSV}
-        className="mb-6 bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg"
+        className="mb-6 bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg cursor-pointer"
       >
         Exportar Lista
       </button>

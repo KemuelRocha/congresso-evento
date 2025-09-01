@@ -36,13 +36,22 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
           ))}
         </nav>
 
-        {/* Botão de Inscrição */}
-        <button
-          onClick={onOpenModal}
-          className="hidden md:inline-block bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer"
-        >
-          Inscreva-se
-        </button>
+        {/* Botões Desktop */}
+        <div className="hidden md:flex items-center space-x-4">
+          <button
+            onClick={() => (window.location.href = "/adm")}
+            className="bg-gray-800 hover:bg-gray-900 text-white font-semibold px-4 py-2 rounded-full shadow-lg cursor-pointer"
+          >
+            Área Administrativa
+          </button>
+
+          <button
+            onClick={onOpenModal}
+            className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer"
+          >
+            Inscreva-se
+          </button>
+        </div>
 
         {/* Botão Mobile */}
         <button
@@ -67,6 +76,19 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
                 {item.label}
               </a>
             ))}
+
+            {/* Botão Área Administrativa */}
+            <button
+              onClick={() => {
+                window.location.href = "/adm";
+                setIsOpen(false);
+              }}
+              className="bg-gray-800 hover:bg-gray-900 text-white font-semibold px-4 py-2 rounded-full shadow-lg cursor-pointer"
+            >
+              Área Administrativa
+            </button>
+
+            {/* Botão Inscreva-se */}
             <button
               onClick={() => {
                 onOpenModal();
