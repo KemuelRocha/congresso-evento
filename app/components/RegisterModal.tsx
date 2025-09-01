@@ -22,6 +22,7 @@ export default function RegisterModal({
   const [congregacao, setCongregacao] = useState<string>("");
   const [fardamentoCiente, setFardamentoCiente] = useState(false);
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
+  const [cartaoMembro, setCartaoMembro] = useState("");
 
   const [confirmation, setConfirmation] = useState<string | null>(null);
 
@@ -38,6 +39,7 @@ export default function RegisterModal({
       area,
       congregacao,
       fardamentoCiente,
+      cartaoMembro,
     };
 
     const { success, codigo } = await salvarInscricao(formData);
@@ -65,6 +67,7 @@ export default function RegisterModal({
     if (!lideranca) return false; // já tem valor padrão, então sempre true
     if (!whatsapp.trim()) return false;
     if (area === null) return false;
+    if (!congregacao) return false;
     if (!fardamentoCiente) return false;
 
     return true;
@@ -91,8 +94,10 @@ export default function RegisterModal({
           <select
             value={area || ""}
             onChange={(e) => {
-              setArea(Number(e.target.value));
-              setCongregacao(""); // resetar congregação
+              const novaArea = Number(e.target.value);
+              setArea(novaArea);
+              const congPadrao = areas[novaArea]?.congregacoes?.[0] || "";
+              setCongregacao(congPadrao);
             }}
             className="w-full rounded-md border p-2"
           >
@@ -243,6 +248,20 @@ export default function RegisterModal({
           {idade !== null && idade < 14 && (
             <p className="text-red-500 text-sm">Idade mínima: 14 anos</p>
           )}
+        </div>
+
+        {/* Número do Cartão de Membro */}
+        <div>
+          <label className="block font-medium">
+            Número do Cartão de Membro
+          </label>
+          <input
+            type="text"
+            value={cartaoMembro}
+            onChange={(e) => setCartaoMembro(e.target.value)}
+            className="w-full rounded-md border p-2"
+            placeholder="Digite seu número de cartão"
+          />
         </div>
 
         {/* WhatsApp */}
