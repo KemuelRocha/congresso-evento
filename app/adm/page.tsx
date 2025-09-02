@@ -8,7 +8,6 @@ import {
   orderBy,
   doc,
   getDoc,
-  DocumentData,
 } from "firebase/firestore";
 import { db } from "../services/firebase";
 import {
@@ -24,6 +23,7 @@ import {
   Legend,
 } from "recharts";
 import { saveAs } from "file-saver";
+import { useRouter } from "next/navigation";
 
 // Tipagem básica
 interface Inscricao {
@@ -57,6 +57,8 @@ export default function AdminDashboard() {
   const [liderFilter, setLiderFilter] = useState<string | "all">("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchTotal = async () => {
@@ -285,7 +287,17 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
-      <h1 className="text-3xl font-bold mb-6">📊 Dashboard de Inscrições</h1>
+      {/* Botão voltar */}
+      <button
+        onClick={() => router.push("/")}
+        className="mb-4 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg shadow cursor-pointer"
+      >
+        ← Voltar para a tela inicial
+      </button>
+
+      <h1 className="text-3xl font-bold mb-6 mt-4">
+        📊 Dashboard de Inscrições
+      </h1>
 
       <div className="flex flex-col md:flex-wrap md:flex-row md:items-center md:justify-start gap-4 mb-6">
         {/* Linha de busca e área/congregação */}
