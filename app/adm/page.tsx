@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   collection,
   getDocs,
@@ -8,6 +8,7 @@ import {
   orderBy,
   doc,
   getDoc,
+  DocumentData,
 } from "firebase/firestore";
 import { db } from "../services/firebase";
 import {
@@ -20,12 +21,14 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 import { saveAs } from "file-saver";
 
 // Tipagem básica
 interface Inscricao {
   id: string;
+  codigo?: string;
   nome: string;
   sexo: string;
   idade: number;
@@ -35,6 +38,7 @@ interface Inscricao {
   whatsapp: string;
   fardamentoCiente: boolean;
   cartaoMembro: string;
+  createdAt?: any; // Timestamp do Firestore
 }
 
 export default function AdminDashboard() {
@@ -44,6 +48,15 @@ export default function AdminDashboard() {
 
   const [inscricoes, setInscricoes] = useState<Inscricao[]>([]);
   const [totalVagas, setTotalVagas] = useState<number | null>(null);
+
+  // filtros e paginação
+  const [search, setSearch] = useState("");
+  const [areaFilter, setAreaFilter] = useState<number | "all">("all");
+  const [congregFilter, setCongregFilter] = useState<string | "all">("all");
+  const [sexoFilter, setSexoFilter] = useState<string | "all">("all");
+  const [liderFilter, setLiderFilter] = useState<string | "all">("all");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     const fetchTotal = async () => {
@@ -124,7 +137,10 @@ export default function AdminDashboard() {
       acc[faixa].total++;
       return acc;
     }, {})
-  );
+  ).sort((a: any, b: any) => {
+    const ordem = ["Menores de 18", "18-25", "26-35", "36+"];
+    return ordem.indexOf(a.faixa) - ordem.indexOf(b.faixa);
+  });
 
   const porLideranca = Object.values(
     inscricoes.reduce((acc: any, i) => {
@@ -135,17 +151,97 @@ export default function AdminDashboard() {
     }, {})
   );
 
-  // --- Exportar CSV ---
-  const exportCSV = () => {
-    let csv = "Area,Nome,Sexo,Idade,Congregacao,Lideranca,Whatsapp\n";
-    inscricoes.forEach((i) => {
-      csv += `${i.area},"${i.nome}",${i.sexo},${i.idade},${i.congregacao},${i.lideranca},${i.whatsapp}\n`;
-    });
+  // --- helpers para filtros ---
+  const uniqueAreas = useMemo(() => {
+    const setAreas = new Set<number>();
+    inscricoes.forEach((i) => i.area && setAreas.add(i.area));
+    return Array.from(setAreas).sort((a, b) => a - b);
+  }, [inscricoes]);
 
-    const blob = new Blob([csv], {
-      type: "text/csv;charset=utf-8;",
+  const congregacoesForArea = useMemo(() => {
+    if (areaFilter === "all") {
+      const setCong = new Set<string>();
+      inscricoes.forEach((i) => i.congregacao && setCong.add(i.congregacao));
+      return Array.from(setCong).sort();
+    }
+    const setCong = new Set<string>();
+    inscricoes
+      .filter((i) => i.area === areaFilter)
+      .forEach((i) => i.congregacao && setCong.add(i.congregacao));
+    return Array.from(setCong).sort();
+  }, [inscricoes, areaFilter]);
+
+  // converte createdAt (Timestamp) para Date
+  const toDate = (val: any): Date | null => {
+    if (!val) return null;
+    if (val?.toDate && typeof val.toDate === "function") return val.toDate();
+    if (val instanceof Date) return val;
+    const parsed = new Date(val);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  // filtro principal
+  const filtered = useMemo(() => {
+    const s = search.trim().toLowerCase();
+
+    return inscricoes.filter((i) => {
+      // search: nome, codigo, cartao, whatsapp
+      if (s) {
+        const haystack = `${i.nome ?? ""} ${i.codigo ?? ""} ${
+          i.cartaoMembro ?? ""
+        } ${i.whatsapp ?? ""}`.toLowerCase();
+        if (!haystack.includes(s)) return false;
+      }
+
+      if (areaFilter !== "all" && i.area !== areaFilter) return false;
+      if (congregFilter !== "all" && i.congregacao !== congregFilter)
+        return false;
+      if (
+        sexoFilter !== "all" &&
+        (i.sexo ?? "").toLowerCase() !== sexoFilter.toLowerCase()
+      )
+        return false;
+      if (
+        liderFilter !== "all" &&
+        (i.lideranca ?? "").toLowerCase() !== liderFilter.toLowerCase()
+      )
+        return false;
+
+      return true;
     });
-    saveAs(blob, "inscricoes.csv");
+  }, [inscricoes, search, areaFilter, congregFilter, sexoFilter, liderFilter]);
+
+  // --- paginação ---
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  useEffect(() => {
+    if (page > totalPages) setPage(1);
+  }, [totalPages, page]);
+
+  const paginated = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
+
+  // --- export CSV (apenas filtrados) ---
+  const exportFilteredCSV = () => {
+    const header =
+      "Codigo,Area,Nome,Sexo,Idade,Congregacao,Lideranca,Whatsapp,CartaoMembro,Data\n";
+    const rows = filtered.map((i) => {
+      const date = toDate(i.createdAt);
+      const dateStr = date ? date.toISOString() : "";
+      return `"${i.codigo ?? ""}",${i.area ?? ""},"${(i.nome ?? "").replace(
+        /"/g,
+        '""'
+      )}",${i.sexo ?? ""},${i.idade ?? ""},"${(i.congregacao ?? "").replace(
+        /"/g,
+        '""'
+      )}",${i.lideranca ?? ""},${i.whatsapp ?? ""},${
+        i.cartaoMembro ?? ""
+      },${dateStr}`;
+    });
+    const csv = header + rows.join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, `inscricoes_filtradas_${new Date().toISOString()}.csv`);
   };
 
   const handleLogin = () => {
@@ -191,16 +287,195 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
       <h1 className="text-3xl font-bold mb-6">📊 Dashboard de Inscrições</h1>
 
-      {/* Botão de Exportar */}
-      <button
-        onClick={exportCSV}
-        className="mb-6 bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg cursor-pointer"
-      >
-        Exportar Lista
-      </button>
+      <div className="flex flex-col md:flex-wrap md:flex-row md:items-center md:justify-start gap-4 mb-6">
+        {/* Linha de busca e área/congregação */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+          <input
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            placeholder="🔎 Buscar por nome / código / cartão / whatsapp..."
+            className="px-4 py-2 border rounded-lg w-full sm:w-80"
+          />
+
+          <select
+            value={areaFilter}
+            onChange={(e) => {
+              setAreaFilter(
+                e.target.value === "all" ? "all" : Number(e.target.value)
+              );
+              setCongregFilter("all");
+              setPage(1);
+            }}
+            className="border rounded p-2 w-full sm:w-48"
+          >
+            <option value="all">Todas as Áreas</option>
+            {uniqueAreas.map((a) => (
+              <option key={a} value={a}>
+                Área {a}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={congregFilter}
+            onChange={(e) => {
+              setCongregFilter(e.target.value as any);
+              setPage(1);
+            }}
+            className="border rounded p-2 w-full sm:w-48"
+          >
+            <option value="all">Todas as Congregações</option>
+            {congregacoesForArea.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Linha de sexo e liderança */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+          <select
+            value={sexoFilter}
+            onChange={(e) => {
+              setSexoFilter(e.target.value);
+              setPage(1);
+            }}
+            className="border rounded p-2 w-full sm:w-40"
+          >
+            <option value="all">Sexo: Todos</option>
+            <option value="M">Masculino</option>
+            <option value="F">Feminino</option>
+          </select>
+
+          <select
+            value={liderFilter}
+            onChange={(e) => {
+              setLiderFilter(e.target.value);
+              setPage(1);
+            }}
+            className="border rounded p-2 w-full sm:w-40"
+          >
+            <option value="all">Jovens / Lideranças</option>
+            <option value="jovem">Jovens</option>
+            <option value="lider">Lideranças</option>
+          </select>
+        </div>
+      </div>
+
+      {/* ações */}
+      <div className="flex items-center justify-between mb-4 gap-4">
+        <div>
+          <button
+            onClick={exportFilteredCSV}
+            className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-lg shadow"
+          >
+            📥 Exportar filtrados
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <label className="text-sm">Itens por página:</label>
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setPage(1);
+            }}
+            className="border rounded p-2"
+          >
+            <option value={10}>10</option>
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </div>
+      </div>
+
+      {/* tabela */}
+      <div className="bg-white rounded-2xl shadow overflow-x-auto">
+        <table className="min-w-full text-left">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-3">Código</th>
+              <th className="px-4 py-3">Nome</th>
+              <th className="px-4 py-3">Cartão</th>
+              <th className="px-4 py-3">WhatsApp</th>
+              <th className="px-4 py-3">Sexo</th>
+              <th className="px-4 py-3">Idade</th>
+              <th className="px-4 py-3">Área</th>
+              <th className="px-4 py-3">Congregação</th>
+              <th className="px-4 py-3">Liderança</th>
+              <th className="px-4 py-3">Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginated.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={10}
+                  className="px-4 py-6 text-center text-gray-500"
+                >
+                  Nenhuma inscrição encontrada.
+                </td>
+              </tr>
+            ) : (
+              paginated.map((i) => {
+                const date = toDate(i.createdAt);
+                return (
+                  <tr key={i.id} className="border-b last:border-b-0">
+                    <td className="px-4 py-3">{i.codigo ?? "-"}</td>
+                    <td className="px-4 py-3">{i.nome}</td>
+                    <td className="px-4 py-3">{i.cartaoMembro ?? "-"}</td>
+                    <td className="px-4 py-3">{i.whatsapp ?? "-"}</td>
+                    <td className="px-4 py-3">{i.sexo ?? "-"}</td>
+                    <td className="px-4 py-3">{i.idade ?? "-"}</td>
+                    <td className="px-4 py-3">{i.area ?? "-"}</td>
+                    <td className="px-4 py-3">{i.congregacao ?? "-"}</td>
+                    <td className="px-4 py-3">{i.lideranca ?? "-"}</td>
+                    <td className="px-4 py-3">
+                      {date ? date.toLocaleString() : "-"}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* paginação */}
+      <div className="flex items-center justify-between mt-4">
+        <div className="text-sm text-gray-600">
+          Mostrando {paginated.length} de {filtered.length} resultados
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+            disabled={page === 1}
+          >
+            {"<"}
+          </button>
+          <span className="px-3 py-1 border rounded bg-white">
+            Página {page} / {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+            disabled={page === totalPages}
+          >
+            {">"}
+          </button>
+        </div>
+      </div>
 
       {/* KPIs - Cards de Resumo */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 mt-6">
         {/* Total de Vagas */}
         <div className="bg-white p-6 rounded-2xl shadow text-center">
           <h3 className="text-lg font-semibold text-gray-600">
@@ -248,6 +523,7 @@ export default function AdminDashboard() {
             <XAxis dataKey="area" />
             <YAxis />
             <Tooltip />
+            <Legend />
             <Bar dataKey="total" fill="#22c55e" />
           </BarChart>
         </ResponsiveContainer>
@@ -261,6 +537,7 @@ export default function AdminDashboard() {
             <XAxis dataKey="congregacao" />
             <YAxis />
             <Tooltip />
+            <Legend />
             <Bar dataKey="total" fill="#3b82f6" />
           </BarChart>
         </ResponsiveContainer>
@@ -290,6 +567,7 @@ export default function AdminDashboard() {
                 ))}
               </Pie>
               <Tooltip />
+              <Legend />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -316,6 +594,7 @@ export default function AdminDashboard() {
                 ))}
               </Pie>
               <Tooltip />
+              <Legend />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -329,6 +608,7 @@ export default function AdminDashboard() {
             <XAxis dataKey="faixa" />
             <YAxis />
             <Tooltip />
+            <Legend />
             <Bar dataKey="total" fill="#f59e0b" />
           </BarChart>
         </ResponsiveContainer>
