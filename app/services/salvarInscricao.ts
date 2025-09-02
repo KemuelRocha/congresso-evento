@@ -4,6 +4,9 @@ import {
   doc,
   runTransaction,
   serverTimestamp,
+  query,
+  where,
+  getDocs,
 } from "firebase/firestore";
 
 export async function salvarInscricao(dados: any) {
@@ -11,6 +14,21 @@ export async function salvarInscricao(dados: any) {
     const inscricoesRef = collection(db, "inscricoes");
     const counterRef = doc(db, "counters", "inscricoes");
 
+    // 🔎 Verifica se já existe inscrição com o mesmo número de cartão
+    const q = query(
+      inscricoesRef,
+      where("cartaoMembro", "==", dados.cartaoMembro)
+    );
+    const existing = await getDocs(q);
+
+    if (!existing.empty) {
+      return {
+        success: false,
+        error: "Número de cartão de membro já informado em outra inscrição",
+      };
+    }
+
+    // 🔄 Continua o processo normal com transação para gerar código único
     const codigo = await runTransaction(db, async (transaction) => {
       const counterDoc = await transaction.get(counterRef);
       let lastCodigo = 0;
@@ -40,6 +58,6 @@ export async function salvarInscricao(dados: any) {
     return { success: true, codigo };
   } catch (err) {
     console.error("Erro ao salvar inscrição:", err);
-    return { success: false };
+    return { success: false, error: "Erro inesperado ao salvar." };
   }
 }

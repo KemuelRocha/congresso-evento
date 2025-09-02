@@ -45,7 +45,7 @@ const Hero: FunctionComponent<HeroProps> = ({ onOpenModal }) => {
           <strong>Grande Coral de Jovens</strong> e louve a Deus junto com
           jovens da nossa filial.
           <br />
-          Inscrições abertas de <strong>01/09/2025 a 31/09/2025</strong>.
+          Inscrições abertas de <strong>03/09/2025 a 20/09/2025</strong>.
         </p>
 
         <div className="flex flex-col md:flex-row items-center gap-4 mb-6 animate-fadeInUp delay-150">

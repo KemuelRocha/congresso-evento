@@ -28,8 +28,18 @@ export default function RegisterModal({
 
   const congregacoes = area ? areas[area]?.congregacoes || [] : [];
 
+  const dataLimite = new Date("2025-09-20T23:59:59");
+  const hoje = new Date();
+  const inscricoesEncerradas = hoje > dataLimite;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (inscricoesEncerradas) {
+      alert("As inscrições estão encerradas!");
+      return;
+    }
+
     const formData = {
       nome,
       sexo,
@@ -42,7 +52,7 @@ export default function RegisterModal({
       cartaoMembro,
     };
 
-    const { success, codigo } = await salvarInscricao(formData);
+    const { success, codigo, error } = await salvarInscricao(formData);
 
     if (success && codigo) {
       setConfirmation(codigo);
@@ -56,7 +66,7 @@ export default function RegisterModal({
       setCongregacao("");
       setFardamentoCiente(false);
     } else {
-      alert("Erro ao enviar inscrição.");
+      alert(error || "Erro ao enviar inscrição.");
     }
   };
 
@@ -72,6 +82,20 @@ export default function RegisterModal({
 
     return true;
   })();
+
+  // 🔴 Se inscrições encerradas, mostra só aviso
+  if (inscricoesEncerradas) {
+    return (
+      <Modal isOpen={isOpen} onClose={onClose} title="Inscrições Encerradas">
+        <div className="text-center p-6">
+          <p className="text-lg font-semibold text-red-600">
+            As inscrições para o Congresso de Jovens 2025 foram encerradas em{" "}
+            <strong>20/09/2025</strong>.
+          </p>
+        </div>
+      </Modal>
+    );
+  }
 
   return confirmation ? (
     <ConfirmacaoInscricao
