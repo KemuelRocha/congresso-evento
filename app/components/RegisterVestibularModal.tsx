@@ -27,6 +27,8 @@ export default function RegisterVestibularModal({
 
   const [confirmation, setConfirmation] = useState<string | null>(null);
 
+  const [copiado, setCopiado] = useState(false);
+
   const congregacoes = area ? areas[area]?.congregacoes || [] : [];
 
   const dataLimite = new Date("2025-10-20T23:59:59");
@@ -134,6 +136,8 @@ export default function RegisterVestibularModal({
   }
 
   if (step === "pagamento") {
+    const pixNumber = "(87) 98833-7969"; // número do PIX
+
     return (
       <Modal
         isOpen={isOpen}
@@ -143,9 +147,26 @@ export default function RegisterVestibularModal({
         <div className="space-y-4">
           <p className="text-center">
             Faça o pagamento via Pix usando a chave:
-            <br />
-            <strong>(87)988337969</strong>
           </p>
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex justify-center items-center gap-2">
+              <strong className="text-lg">{pixNumber}</strong>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(pixNumber);
+                  setCopiado(true);
+                  setTimeout(() => setCopiado(false), 2000); // some após 2s
+                }}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-2 py-1 rounded cursor-pointer"
+              >
+                Copiar
+              </button>
+            </div>
+            {copiado && (
+              <span className="text-green-600 text-sm">Número copiado!</span>
+            )}
+          </div>
+
           <div className="flex justify-center">
             <img
               src="/assets/pix.jpg"
