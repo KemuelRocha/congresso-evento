@@ -109,7 +109,7 @@ export default function RegisterModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Inscrição - Congresso de Jovens"
+      title="Inscrição - Grande Coral de Jovens - CJ 2025"
     >
       <form className="space-y-4">
         {/* Área */}
@@ -284,7 +284,7 @@ export default function RegisterModal({
             value={cartaoMembro}
             onChange={(e) => setCartaoMembro(e.target.value)}
             className="w-full rounded-md border p-2"
-            placeholder="Digite seu número de cartão"
+            placeholder="Digite seu número de cartão de membro"
           />
         </div>
 

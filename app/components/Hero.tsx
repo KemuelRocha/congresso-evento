@@ -7,9 +7,13 @@ import { db } from "../services/firebase";
 
 interface HeroProps {
   onOpenModal: () => void;
+  onOpenVestibularModal: () => void;
 }
 
-const Hero: FunctionComponent<HeroProps> = ({ onOpenModal }) => {
+const Hero: FunctionComponent<HeroProps> = ({
+  onOpenModal,
+  onOpenVestibularModal,
+}) => {
   const count = useInscricoesCount();
   const [totalVagas, setTotalVagas] = useState<number | null>(null);
 
@@ -70,12 +74,21 @@ const Hero: FunctionComponent<HeroProps> = ({ onOpenModal }) => {
           </div>
         </div>
 
-        <button
-          onClick={onOpenModal}
-          className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-full shadow-2xl transform hover:-translate-y-1 transition-all animate-fadeInUp delay-200 cursor-pointer"
-        >
-          Inscreva-se no Coral
-        </button>
+        <div className="flex flex-col items-center gap-4">
+          <button
+            onClick={onOpenModal}
+            className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-full shadow-2xl transform hover:-translate-y-1 transition-all animate-fadeInUp delay-200 cursor-pointer"
+          >
+            Inscreva-se no Coral
+          </button>
+
+          <button
+            onClick={onOpenVestibularModal}
+            className="bg-gray-700 hover:bg-gray-900 text-white font-semibold px-8 py-4 rounded-full shadow-2xl transform hover:-translate-y-1 transition-all animate-fadeInUp delay-300 cursor-pointer"
+          >
+            Inscreva-se no Vestibular Bíblico
+          </button>
+        </div>
       </div>
     </section>
   );
