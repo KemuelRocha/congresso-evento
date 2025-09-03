@@ -1,9 +1,23 @@
 "use client";
 
 import { FunctionComponent, useEffect, useState } from "react";
-import { useInscricoesCount } from "../hooks/useInscricoesCount";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query } from "firebase/firestore";
 import { db } from "../services/firebase";
+
+interface Inscricao {
+  id: string;
+  codigo?: string;
+  nome: string;
+  sexo: string;
+  idade: number;
+  area: number;
+  congregacao: string;
+  lideranca: string;
+  whatsapp: string;
+  fardamentoCiente: boolean;
+  cartaoMembro: string;
+  createdAt?: any; // Timestamp do Firestore
+}
 
 interface HeroProps {
   onOpenModal: () => void;
@@ -14,7 +28,7 @@ const Hero: FunctionComponent<HeroProps> = ({
   onOpenModal,
   onOpenVestibularModal,
 }) => {
-  const count = useInscricoesCount();
+  const [inscricoes, setInscricoes] = useState<Inscricao[]>([]);
   const [totalVagas, setTotalVagas] = useState<number | null>(null);
 
   const dataInicio = new Date("2025-09-20T11:59:59");
@@ -33,6 +47,20 @@ const Hero: FunctionComponent<HeroProps> = ({
     };
 
     fetchTotal();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const q = query(collection(db, "inscricoes"));
+      const snapshot = await getDocs(q);
+      const data: Inscricao[] = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as Inscricao[];
+      setInscricoes(data);
+    };
+
+    fetchData();
   }, []);
   return (
     <section
@@ -60,10 +88,10 @@ const Hero: FunctionComponent<HeroProps> = ({
           {/* Inscrições confirmadas */}
           <div className="flex items-center gap-2 bg-gray-800 text-white font-semibold px-4 py-2 rounded-full shadow-md text-sm md:text-base">
             <span>✅</span>
-            {count !== null
-              ? `${count} ${
-                  count === 1 ? "inscrição" : "inscrições"
-                } confirmada${count === 1 ? "" : "s"}`
+            {inscricoes.length !== 0
+              ? `${inscricoes.length} ${
+                  inscricoes.length === 1 ? "inscrição" : "inscrições"
+                } confirmada${inscricoes.length === 1 ? "" : "s"}`
               : "Carregando..."}
           </div>
 
@@ -72,7 +100,7 @@ const Hero: FunctionComponent<HeroProps> = ({
             <span>⏳</span>
             Restam{" "}
             {totalVagas !== null
-              ? totalVagas - (count || 0)
+              ? totalVagas - (inscricoes.length || 0)
               : "Carregando..."}{" "}
             vagas
           </div>
