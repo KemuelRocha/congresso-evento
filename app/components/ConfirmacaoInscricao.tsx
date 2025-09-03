@@ -9,9 +9,11 @@ import jsPDF from "jspdf";
 export function ConfirmacaoInscricao({
   codigo,
   onClose,
+  isVestibular = false,
 }: {
   codigo: string;
   onClose: () => void;
+  isVestibular?: boolean;
 }) {
   const pdfRef = useRef<HTMLDivElement>(null);
 
@@ -65,8 +67,10 @@ export function ConfirmacaoInscricao({
         </div>
 
         <p className="text-sm text-gray-500">
-          Guarde este código ou apresente o QRCode nos ensaios para confirmar
-          presença.
+          Guarde este código ou apresente o QRCode{" "}
+          {isVestibular
+            ? "no dia da prova para confirmar sua inscrição."
+            : "nos ensaios para confirmar sua presença."}
         </p>
       </div>
 

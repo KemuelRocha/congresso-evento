@@ -131,6 +131,7 @@ export default function RegisterVestibularModal({
           setStep("form");
           onClose();
         }}
+        isVestibular
       />
     );
   }
