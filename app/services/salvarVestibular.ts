@@ -7,6 +7,7 @@ import {
   query,
   where,
   getDocs,
+  limit,
 } from "firebase/firestore";
 
 export async function salvarVestibular(dados: any) {
@@ -17,7 +18,8 @@ export async function salvarVestibular(dados: any) {
     // 🔎 Verifica se já existe inscrição com o mesmo número de cartão
     const q = query(
       vestibularRef,
-      where("cartaoMembro", "==", dados.cartaoMembro)
+      where("cartaoMembro", "==", dados.cartaoMembro),
+      limit(1)
     );
     const existing = await getDocs(q);
 
