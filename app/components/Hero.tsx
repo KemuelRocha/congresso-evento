@@ -1,8 +1,6 @@
 "use client";
 
-import { FunctionComponent, useEffect, useState } from "react";
-import { collection, doc, getDoc, getDocs, query } from "firebase/firestore";
-import { db } from "../services/firebase";
+import { FunctionComponent } from "react";
 
 interface Inscricao {
   id: string;
@@ -28,40 +26,10 @@ const Hero: FunctionComponent<HeroProps> = ({
   onOpenModal,
   onOpenVestibularModal,
 }) => {
-  const [inscricoes, setInscricoes] = useState<Inscricao[]>([]);
-  const [totalVagas, setTotalVagas] = useState<number | null>(null);
-
   const dataInicio = new Date("2025-09-20T11:59:59");
   const hoje = new Date();
   const inscricoesAbertas = hoje > dataInicio;
 
-  useEffect(() => {
-    const fetchTotal = async () => {
-      const ref = doc(db, "vagas", "total");
-      const snapshot = await getDoc(ref);
-
-      if (snapshot.exists()) {
-        const data = snapshot.data();
-        setTotalVagas(data.valor);
-      }
-    };
-
-    fetchTotal();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const q = query(collection(db, "inscricoes"));
-      const snapshot = await getDocs(q);
-      const data: Inscricao[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Inscricao[];
-      setInscricoes(data);
-    };
-
-    fetchData();
-  }, []);
   return (
     <section
       id="hero"
@@ -83,28 +51,6 @@ const Hero: FunctionComponent<HeroProps> = ({
           <br />
           Inscrições abertas de <strong>03/09/2025 a 20/09/2025</strong>.
         </p>
-
-        <div className="flex flex-col md:flex-row items-center gap-4 mb-6 animate-fadeInUp delay-150">
-          {/* Inscrições confirmadas */}
-          <div className="flex items-center gap-2 bg-gray-800 text-white font-semibold px-4 py-2 rounded-full shadow-md text-sm md:text-base">
-            <span>✅</span>
-            {inscricoes.length !== 0
-              ? `${inscricoes.length} ${
-                  inscricoes.length === 1 ? "inscrição" : "inscrições"
-                } confirmada${inscricoes.length === 1 ? "" : "s"}`
-              : "Carregando..."}
-          </div>
-
-          {/* Vagas restantes */}
-          <div className="flex items-center gap-2 bg-gray-700 text-white font-semibold px-4 py-2 rounded-full shadow-md text-sm md:text-base">
-            <span>⏳</span>
-            Restam{" "}
-            {totalVagas !== null
-              ? totalVagas - (inscricoes.length || 0)
-              : "Carregando..."}{" "}
-            vagas
-          </div>
-        </div>
 
         <div className="flex flex-col items-center gap-4 mt-4">
           <button
