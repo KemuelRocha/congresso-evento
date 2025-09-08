@@ -261,16 +261,24 @@ export default function RegisterModal({
             className="w-full rounded-md border p-2"
             onChange={(e) => {
               const birthDate = new Date(e.target.value);
-              const today = new Date();
-              let age = today.getFullYear() - birthDate.getFullYear();
-              const m = today.getMonth() - birthDate.getMonth();
-              if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate()))
+              const eventDate = new Date("2025-11-30"); // data do congresso
+
+              let age = eventDate.getFullYear() - birthDate.getFullYear();
+              const m = eventDate.getMonth() - birthDate.getMonth();
+              if (
+                m < 0 ||
+                (m === 0 && eventDate.getDate() < birthDate.getDate())
+              ) {
                 age--;
+              }
+
               setIdade(age);
             }}
           />
           {idade !== null && idade < 14 && (
-            <p className="text-red-500 text-sm">Idade mínima: 14 anos</p>
+            <p className="text-red-500 text-sm">
+              Idade mínima: 14 anos até o dia 30/11/2025
+            </p>
           )}
         </div>
 
