@@ -334,7 +334,7 @@ export default function RegisterModal({
         {/* Botão */}
         <button
           type="submit"
-          disabled={!isValid}
+          disabled={!isValid || loading}
           className="w-full rounded-md bg-blue-600 text-white p-2 disabled:bg-gray-400 cursor-pointer"
           onClick={handleSubmit}
         >
