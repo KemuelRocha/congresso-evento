@@ -26,6 +26,8 @@ export default function RegisterModal({
 
   const [confirmation, setConfirmation] = useState<string | null>(null);
 
+  const [loading, setLoading] = useState(false);
+
   const congregacoes = area ? areas[area]?.congregacoes || [] : [];
 
   const dataLimite = new Date("2025-09-20T23:59:59");
@@ -35,38 +37,46 @@ export default function RegisterModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (loading) return; // evita clique duplo
     if (inscricoesEncerradas) {
       alert("As inscrições estão encerradas!");
       return;
     }
 
-    const formData = {
-      nome,
-      sexo,
-      idade,
-      lideranca,
-      whatsapp,
-      area,
-      congregacao,
-      fardamentoCiente,
-      cartaoMembro,
-    };
+    setLoading(true);
 
-    const { success, codigo, error } = await salvarInscricao(formData);
+    try {
+      const formData = {
+        nome,
+        sexo,
+        idade,
+        lideranca,
+        whatsapp,
+        area,
+        congregacao,
+        fardamentoCiente,
+        cartaoMembro,
+      };
 
-    if (success && codigo) {
-      setConfirmation(codigo);
-      // resetar form
-      setNome("");
-      setSexo("");
-      setIdade(null);
-      setLideranca("jovem");
-      setWhatsapp("");
-      setArea(null);
-      setCongregacao("");
-      setFardamentoCiente(false);
-    } else {
-      alert(error || "Erro ao enviar inscrição.");
+      const { success, codigo, error } = await salvarInscricao(formData);
+
+      if (success && codigo) {
+        setConfirmation(codigo);
+        // resetar form
+        setNome("");
+        setSexo("");
+        setIdade(null);
+        setLideranca("jovem");
+        setWhatsapp("");
+        setArea(null);
+        setCongregacao("");
+        setFardamentoCiente(false);
+        setCartaoMembro("");
+      } else {
+        alert(error || "Erro ao enviar inscrição.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -328,7 +338,7 @@ export default function RegisterModal({
           className="w-full rounded-md bg-blue-600 text-white p-2 disabled:bg-gray-400 cursor-pointer"
           onClick={handleSubmit}
         >
-          Enviar Inscrição
+          {loading ? "Enviando..." : "Enviar Inscrição"}
         </button>
       </form>
       {expandedImage && (
