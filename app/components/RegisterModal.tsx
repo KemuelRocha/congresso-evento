@@ -30,7 +30,7 @@ export default function RegisterModal({
 
   const congregacoes = area ? areas[area]?.congregacoes || [] : [];
 
-  const dataLimite = new Date("2025-09-20T23:59:59");
+  const dataLimite = new Date("2025-09-30T23:59:59");
   const hoje = new Date();
   const inscricoesEncerradas = hoje > dataLimite;
 

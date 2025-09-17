@@ -49,7 +49,7 @@ const Hero: FunctionComponent<HeroProps> = ({
           <strong>Grande Coral de Jovens</strong> e louve a Deus junto com
           jovens da nossa filial.
           <br />
-          Inscrições abertas de <strong>03/09/2025 a 20/09/2025</strong>.
+          Inscrições abertas de <strong>03/09/2025 a 30/09/2025</strong>.
         </p>
 
         <div className="flex flex-col items-center gap-4 mt-4">

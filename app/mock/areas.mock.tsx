@@ -189,7 +189,7 @@ const congregacoes = [
   },
   {
     area: 6,
-    congregacao: "ÁREA 21",
+    congregacao: "ÁREA 20",
   },
   {
     area: 6,
