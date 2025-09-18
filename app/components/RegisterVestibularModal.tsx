@@ -26,6 +26,7 @@ export default function RegisterVestibularModal({
   const [cartaoMembro, setCartaoMembro] = useState("");
 
   const [confirmation, setConfirmation] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [copiado, setCopiado] = useState(false);
 
@@ -69,10 +70,13 @@ export default function RegisterVestibularModal({
   };
 
   const handlePagamentoSubmit = async () => {
+    if (loading) return; // evita clique duplo
     if (!comprovante) {
       alert("Por favor, envie o comprovante do PIX.");
       return;
     }
+
+    setLoading(true);
 
     try {
       const urlComprovante = await handleUpload(comprovante);
@@ -106,6 +110,8 @@ export default function RegisterVestibularModal({
     } catch (err) {
       console.error(err);
       alert("Falha ao enviar comprovante.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -138,6 +144,7 @@ export default function RegisterVestibularModal({
 
   if (step === "pagamento") {
     const pixNumber = "(87) 98833-7969"; // número do PIX
+    const valor = "R$ 5,00"; // valor do pagamento
 
     return (
       <Modal
@@ -149,6 +156,12 @@ export default function RegisterVestibularModal({
           <p className="text-center">
             Faça o pagamento via Pix usando a chave:
           </p>
+
+          {/* Valor a pagar */}
+          <p className="text-center font-semibold">
+            Valor do pagamento: {valor}
+          </p>
+
           <div className="flex flex-col items-center gap-2">
             <div className="flex justify-center items-center gap-2">
               <strong className="text-lg">{pixNumber}</strong>
@@ -188,10 +201,12 @@ export default function RegisterVestibularModal({
 
           <button
             onClick={handlePagamentoSubmit}
-            disabled={!comprovante}
+            disabled={!comprovante || loading}
             className="w-full rounded-md bg-purple-600 text-white p-2 disabled:bg-gray-400"
           >
-            Enviar Comprovante e Finalizar Inscrição
+            {loading
+              ? "Enviando..."
+              : "Enviar Comprovante e Finalizar Inscrição"}
           </button>
         </div>
       </Modal>
