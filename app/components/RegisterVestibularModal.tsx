@@ -196,7 +196,7 @@ export default function RegisterVestibularModal({
             <label className="block font-medium">Comprovante do PIX</label>
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,application/pdf"
               onChange={(e) => setComprovante(e.target.files?.[0] || null)}
               className="w-full rounded-md border p-2"
             />
