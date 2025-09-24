@@ -30,6 +30,9 @@ export default function RegisterVestibularModal({
 
   const [copiado, setCopiado] = useState(false);
 
+  // estado novo:
+  const [aceitouLGPD, setAceitouLGPD] = useState(false);
+
   const congregacoes = area ? areas[area]?.congregacoes || [] : [];
 
   const dataLimite = new Date("2025-10-20T23:59:59");
@@ -329,9 +332,26 @@ export default function RegisterVestibularModal({
           />
         </div>
 
+        {/* Checkbox LGPD */}
+        <div className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            id="lgpd"
+            checked={aceitouLGPD}
+            onChange={(e) => setAceitouLGPD(e.target.checked)}
+            className="mt-1"
+            required // força no HTML também
+          />
+          <label htmlFor="lgpd" className="text-sm">
+            Declaro estar ciente e de acordo com o uso dos meus dados para fins
+            desta inscrição, assumindo total responsabilidade pelas informações
+            prestadas.
+          </label>
+        </div>
+
         <button
           type="submit"
-          disabled={!isValidForm}
+          disabled={!isValidForm || !aceitouLGPD}
           className="w-full rounded-md bg-purple-600 text-white p-2 disabled:bg-gray-400"
         >
           Próximo: Pagamento

@@ -2,21 +2,6 @@
 
 import { FunctionComponent } from "react";
 
-interface Inscricao {
-  id: string;
-  codigo?: string;
-  nome: string;
-  sexo: string;
-  idade: number;
-  area: number;
-  congregacao: string;
-  lideranca: string;
-  whatsapp: string;
-  fardamentoCiente: boolean;
-  cartaoMembro: string;
-  createdAt?: any; // Timestamp do Firestore
-}
-
 interface HeroProps {
   onOpenModal: () => void;
   onOpenVestibularModal: () => void;
@@ -26,6 +11,10 @@ const Hero: FunctionComponent<HeroProps> = ({
   onOpenModal,
   onOpenVestibularModal,
 }) => {
+  const dataInicio = new Date("2025-09-24T08:59:59");
+  const hoje = new Date();
+  const inscricoesAbertas = hoje > dataInicio;
+
   return (
     <section
       id="hero"
@@ -55,12 +44,14 @@ const Hero: FunctionComponent<HeroProps> = ({
           >
             Inscreva-se no Grande Coral
           </button>
-          {/* <button
-            onClick={onOpenVestibularModal}
-            className="bg-gray-700 hover:bg-gray-900 text-white font-semibold px-8 py-4 rounded-full shadow-2xl transform hover:-translate-y-1 transition-all animate-fadeInUp delay-300 cursor-pointer"
-          >
-            Inscreva-se no Vestibular Bíblico
-          </button> */}
+          {inscricoesAbertas && (
+            <button
+              onClick={onOpenVestibularModal}
+              className="bg-gray-700 hover:bg-gray-900 text-white font-semibold px-8 py-4 rounded-full shadow-2xl transform hover:-translate-y-1 transition-all animate-fadeInUp delay-300 cursor-pointer"
+            >
+              Inscreva-se no Vestibular Bíblico
+            </button>
+          )}
         </div>
       </div>
     </section>
