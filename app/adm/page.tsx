@@ -839,6 +839,14 @@ export default function AdminDashboard() {
                   const date = v.createdAt?.toDate
                     ? v.createdAt.toDate()
                     : new Date(v.createdAt);
+
+                  const comprovanteUrl =
+                    v.comprovante &&
+                    v.comprovante.toLowerCase().endsWith(".pdf")
+                      ? v.comprovante
+                          .replace("/image/upload/", "/image/upload/pg_1/")
+                          .replace(/\.pdf$/i, ".jpg")
+                      : v.comprovante;
                   return (
                     <tr key={v.id} className="border-b last:border-b-0">
                       <td className="px-4 py-3">{v.codigo ?? "-"}</td>
@@ -849,9 +857,9 @@ export default function AdminDashboard() {
                       <td className="px-4 py-3">{v.area ?? "-"}</td>
                       <td className="px-4 py-3">{v.congregacao ?? "-"}</td>
                       <td className="px-4 py-3">
-                        {v.comprovante ? (
+                        {comprovanteUrl ? (
                           <a
-                            href={v.comprovante}
+                            href={comprovanteUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-500 underline"
