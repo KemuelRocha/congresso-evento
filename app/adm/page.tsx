@@ -333,7 +333,7 @@ export default function AdminDashboard() {
   // Contar inscrições por área
   const inscricoesPorArea = uniqueAreas.map((area) => ({
     area,
-    count: vestibular.filter((v) => v.area === area).length,
+    total: vestibular.filter((v) => v.area === area).length,
   }));
 
   const handleLogin = () => {
@@ -921,7 +921,7 @@ export default function AdminDashboard() {
                 <XAxis dataKey="area" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="count" fill="#3b82f6" />
+                <Bar dataKey="total" fill="#3b82f6" />
               </BarChart>
             </ResponsiveContainer>
           </div>
