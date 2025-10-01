@@ -32,7 +32,7 @@ export default function RegisterModal({
 
   const dataLimite = new Date("2025-09-30T23:59:59");
   const hoje = new Date();
-  const inscricoesEncerradas = hoje > dataLimite;
+  const inscricoesEncerradas = false;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
