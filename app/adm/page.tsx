@@ -266,20 +266,35 @@ export default function AdminDashboard() {
   // --- export CSV (apenas filtrados) ---
   const exportFilteredCSV = () => {
     const header =
-      "Codigo,Area,Nome,Sexo,Idade,Congregacao,Lideranca,Whatsapp,CartaoMembro,Data\n";
+      "Codigo,Area,Congregacao,Nome,Sexo,Lideranca,Whatsapp,TAMANHO VESTIDO,Pagamento 1,Pagamento 2\n";
+
+    const esc = (v: any) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+
     const rows = filtered.map((i) => {
       const date = toDate(i.createdAt);
       const dateStr = date ? date.toISOString() : "";
-      return `"${i.codigo ?? ""}",${i.area ?? ""},"${(i.nome ?? "").replace(
-        /"/g,
-        '""'
-      )}",${i.sexo ?? ""},${i.idade ?? ""},"${(i.congregacao ?? "").replace(
-        /"/g,
-        '""'
-      )}",${i.lideranca ?? ""},${i.whatsapp ?? ""},${
-        i.cartaoMembro ?? ""
-      },${dateStr}`;
+
+      // ajuste os nomes dos campos abaixo se sua coleção usar outros nomes
+      const tamanhoVestido = (i as any).tamanhoVestido ?? "";
+      const pagamento1 = (i as any).pagamento1 ?? "";
+      const pagamento2 = (i as any).pagamento2 ?? "";
+
+      return [
+        i.codigo ?? "",
+        i.area ?? "",
+        i.congregacao ?? "",
+        i.nome ?? "",
+        i.sexo ?? "",
+        i.lideranca ?? "",
+        i.whatsapp ?? "",
+        tamanhoVestido,
+        pagamento1,
+        pagamento2,
+      ]
+        .map(esc)
+        .join(",");
     });
+
     const csv = header + rows.join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `inscricoes_filtradas_${new Date().toISOString()}.csv`);
