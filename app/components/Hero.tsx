@@ -13,7 +13,7 @@ const Hero: FunctionComponent<HeroProps> = ({
 }) => {
   const dataInicio = new Date("2025-09-24T08:59:59");
   const hoje = new Date();
-  const inscricoesAbertas = hoje > dataInicio;
+  const inscricoesAbertas = false;
 
   return (
     <section
@@ -38,12 +38,12 @@ const Hero: FunctionComponent<HeroProps> = ({
         </p>
 
         <div className="flex flex-col items-center gap-4 mt-4">
-          <button
+          {/* <button
             onClick={onOpenModal}
             className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-full shadow-2xl transform hover:-translate-y-1 transition-all animate-fadeInUp delay-200 cursor-pointer"
           >
             Inscreva-se no Grande Coral
-          </button>
+          </button> */}
           {inscricoesAbertas && (
             <button
               onClick={onOpenVestibularModal}
