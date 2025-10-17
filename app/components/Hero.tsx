@@ -1,6 +1,7 @@
 "use client";
 
 import { FunctionComponent } from "react";
+import { useInscricoesStatus } from "../hooks/useInscricoesStatus";
 
 interface HeroProps {
   onOpenModal: () => void;
@@ -11,10 +12,9 @@ const Hero: FunctionComponent<HeroProps> = ({
   onOpenModal,
   onOpenVestibularModal,
 }) => {
-  const dataInicio = new Date("2025-09-24T08:59:59");
-  const hoje = new Date();
-  const inscricoesAbertas = false;
+  const { coralAtivo, vestibularAtivo, loading } = useInscricoesStatus();
 
+  if (loading) return null;
   return (
     <section
       id="hero"
@@ -33,19 +33,18 @@ const Hero: FunctionComponent<HeroProps> = ({
           <strong>Congresso de Jovens 2025</strong>! Participe do{" "}
           <strong>Grande Coral de Jovens</strong> e louve a Deus junto com
           jovens da nossa filial.
-          <br />
-          <br />
-          Inscrições <strong>ENCERRADAS!</strong>.
         </p>
 
         <div className="flex flex-col items-center gap-4 mt-4">
-          {/* <button
-            onClick={onOpenModal}
-            className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-full shadow-2xl transform hover:-translate-y-1 transition-all animate-fadeInUp delay-200 cursor-pointer"
-          >
-            Inscreva-se no Grande Coral
-          </button> */}
-          {inscricoesAbertas && (
+          {coralAtivo && (
+            <button
+              onClick={onOpenModal}
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-full shadow-2xl transform hover:-translate-y-1 transition-all animate-fadeInUp delay-200 cursor-pointer"
+            >
+              Inscreva-se no Grande Coral
+            </button>
+          )}
+          {vestibularAtivo && (
             <button
               onClick={onOpenVestibularModal}
               className="bg-gray-700 hover:bg-gray-900 text-white font-semibold px-8 py-4 rounded-full shadow-2xl transform hover:-translate-y-1 transition-all animate-fadeInUp delay-300 cursor-pointer"

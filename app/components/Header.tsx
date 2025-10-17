@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { useInscricoesStatus } from "../hooks/useInscricoesStatus";
 
 export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
+  const { coralAtivo, loading } = useInscricoesStatus();
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
@@ -11,6 +13,8 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
     { label: "Programação", href: "#schedule" },
     { label: "Local", href: "#location" },
   ];
+
+  if (loading) return null;
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white/70 backdrop-blur-md shadow-md transition-colors">
@@ -45,12 +49,14 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
             Área Administrativa
           </button>
 
-          {/* <button
-            onClick={onOpenModal}
-            className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer"
-          >
-            Inscreva-se
-          </button> */}
+          {coralAtivo && (
+            <button
+              onClick={onOpenModal}
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer"
+            >
+              Inscreva-se
+            </button>
+          )}
         </div>
 
         {/* Botão Mobile */}
