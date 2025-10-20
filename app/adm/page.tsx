@@ -266,7 +266,7 @@ export default function AdminDashboard() {
   // --- export CSV (apenas filtrados) ---
   const exportFilteredCSV = () => {
     const header =
-      "Codigo,Area,Congregacao,Nome,Sexo,Lideranca,Whatsapp,TAMANHO VESTIDO,Pagamento 1,Pagamento 2\n";
+      "Codigo,Area,Congregacao,Nome,Sexo,Lideranca,Whatsapp,VESTIDO/GRAVATA,Pagamento 1,Pagamento 2\n";
 
     const esc = (v: any) => `"${String(v ?? "").replace(/"/g, '""')}"`;
 
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
       const dateStr = date ? date.toISOString() : "";
 
       // ajuste os nomes dos campos abaixo se sua coleção usar outros nomes
-      const tamanhoVestido = (i as any).tamanhoVestido ?? "";
+      const vestidoGravata = (i as any).vestidoGravata ?? "";
       const pagamento1 = (i as any).pagamento1 ?? "";
       const pagamento2 = (i as any).pagamento2 ?? "";
 
@@ -287,7 +287,7 @@ export default function AdminDashboard() {
         i.sexo ?? "",
         i.lideranca ?? "",
         i.whatsapp ?? "",
-        tamanhoVestido,
+        vestidoGravata,
         pagamento1,
         pagamento2,
       ]
