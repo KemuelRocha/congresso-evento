@@ -95,15 +95,17 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
             </button>
 
             {/* Botão Inscreva-se */}
-            <button
-              onClick={() => {
-                onOpenModal();
-                setIsOpen(false);
-              }}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer"
-            >
-              Inscreva-se
-            </button>
+            {coralAtivo && (
+              <button
+                onClick={() => {
+                  onOpenModal();
+                  setIsOpen(false);
+                }}
+                className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer"
+              >
+                Inscreva-se
+              </button>
+            )}
           </nav>
         </div>
       )}
