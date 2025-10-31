@@ -7,32 +7,43 @@ export function useFindInscrito() {
   const [loading, setLoading] = useState(false);
 
   async function buscar(valor: string) {
-    setLoading(true);
+    if (!valor || valor.trim() === "") {
+      limpar();
+      return;
+    }
 
+    setLoading(true);
     try {
       const inscricoesRef = collection(db, "inscricoes");
 
-      let q = query(inscricoesRef, where("codigo", "==", valor));
-      let snapshot = await getDocs(q);
+      const qCodigo = query(inscricoesRef, where("codigo", "==", valor));
 
-      let resultados: any[] = [];
+      const qNome = query(
+        inscricoesRef,
+        where("nome", ">=", valor),
+        where("nome", "<=", valor + "\uf8ff")
+      );
 
-      if (!snapshot.empty) {
-        resultados = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-      } else {
-        snapshot = await getDocs(inscricoesRef);
-        resultados = snapshot.docs
-          .map((doc) => ({ id: doc.id, nome: doc.data().nome, ...doc.data() }))
-          .filter((doc) =>
-            doc.nome.toLowerCase().includes(valor.toLowerCase())
-          );
-      }
+      const [snapshotCodigo, snapshotNome] = await Promise.all([
+        getDocs(qCodigo),
+        getDocs(qNome),
+      ]);
+
+      const resultadosMap = new Map<string, any>();
+
+      snapshotCodigo.docs.forEach((doc) => {
+        resultadosMap.set(doc.id, { id: doc.id, ...doc.data() });
+      });
+
+      snapshotNome.docs.forEach((doc) => {
+        resultadosMap.set(doc.id, { id: doc.id, ...doc.data() });
+      });
+
+      const resultados = Array.from(resultadosMap.values());
+
       setInscritos(resultados);
     } catch (err) {
-      console.error(err);
+      console.error("Erro ao buscar inscritos:", err);
       setInscritos([]);
     }
 
