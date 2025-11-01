@@ -57,6 +57,10 @@ export default function AdminDashboard() {
   const [congregFilter, setCongregFilter] = useState<string | "all">("all");
   const [sexoFilter, setSexoFilter] = useState<string | "all">("all");
   const [liderFilter, setLiderFilter] = useState<string | "all">("all");
+  // filtros de data
+  const [dateStart, setDateStart] = useState<string>("");
+  const [dateEnd, setDateEnd] = useState<string>("");
+
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
@@ -248,9 +252,33 @@ export default function AdminDashboard() {
       )
         return false;
 
+      // filtro por data
+      const created = toDate(i.createdAt);
+
+      if (dateStart) {
+        const [y, m, d] = dateStart.split("-").map(Number);
+        const start = new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
+        if (!created || created < start) return false;
+      }
+
+      if (dateEnd) {
+        const [y, m, d] = dateEnd.split("-").map(Number);
+        const end = new Date(Date.UTC(y, m - 1, d, 23, 59, 59, 999));
+        if (!created || created > end) return false;
+      }
+
       return true;
     });
-  }, [inscricoes, search, areaFilter, congregFilter, sexoFilter, liderFilter]);
+  }, [
+    inscricoes,
+    search,
+    areaFilter,
+    congregFilter,
+    sexoFilter,
+    liderFilter,
+    dateStart,
+    dateEnd,
+  ]);
 
   // --- paginação ---
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -480,6 +508,28 @@ export default function AdminDashboard() {
             <option value="jovem">Jovens</option>
             <option value="lider">Lideranças</option>
           </select>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+          <input
+            type="date"
+            value={dateStart}
+            onChange={(e) => {
+              setDateStart(e.target.value);
+              setPage(1);
+            }}
+            className="border rounded p-2 w-full sm:w-40"
+          />
+
+          <input
+            type="date"
+            value={dateEnd}
+            onChange={(e) => {
+              setDateEnd(e.target.value);
+              setPage(1);
+            }}
+            className="border rounded p-2 w-full sm:w-40"
+          />
         </div>
       </div>
 
