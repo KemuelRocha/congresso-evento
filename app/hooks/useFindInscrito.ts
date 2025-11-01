@@ -14,14 +14,16 @@ export function useFindInscrito() {
 
     setLoading(true);
     try {
+      const v = valor.toLowerCase();
+
       const inscricoesRef = collection(db, "inscricoes");
 
       const qCodigo = query(inscricoesRef, where("codigo", "==", valor));
 
       const qNome = query(
         inscricoesRef,
-        where("nome", ">=", valor),
-        where("nome", "<=", valor + "\uf8ff")
+        where("nomeLower", ">=", v),
+        where("nomeLower", "<=", v + "\uf8ff")
       );
 
       const [snapshotCodigo, snapshotNome] = await Promise.all([

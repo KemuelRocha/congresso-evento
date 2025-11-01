@@ -48,6 +48,7 @@ export default function RegisterModal({
     try {
       const formData = {
         nome,
+        nomeLower: nome.toLowerCase(),
         sexo,
         idade,
         lideranca,
