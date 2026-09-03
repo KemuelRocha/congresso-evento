@@ -2,6 +2,7 @@
 
 import { QRCodeSVG as QRCode } from "qrcode.react";
 import { Modal } from "./ui/Modal";
+import { Button } from "./ui/Button";
 import { useRef } from "react";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
@@ -46,27 +47,27 @@ export function ConfirmacaoInscricao({
         ref={pdfRef}
         className="text-center space-y-5 p-4 bg-white rounded-lg"
       >
-        <h2 className="text-2xl font-bold text-blue-700">
+        <h2 className="font-display text-2xl font-bold text-primary-700">
           Inscrição Realizada!
         </h2>
-        <p className="text-gray-700">
+        <p className="text-neutral-700">
           Obrigado por se inscrever, sua participação está garantida.
         </p>
 
-        <div className="bg-gray-100 p-4 rounded-lg shadow-sm">
+        <div className="bg-neutral-100 p-4 rounded-lg shadow-sm">
           <p className="text-lg">Seu código de inscrição:</p>
-          <p className="font-bold text-2xl text-blue-600 tracking-wider">
+          <p className="font-bold text-2xl text-primary-600 tracking-wider">
             {codigo}
           </p>
         </div>
 
         <div className="flex justify-center">
-          <div className="p-3 border rounded-lg shadow-md bg-white">
+          <div className="p-3 border rounded-lg shadow-card bg-white">
             <QRCode value={codigo} size={180} />
           </div>
         </div>
 
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-neutral-500">
           Guarde este código ou apresente o QRCode{" "}
           {isVestibular
             ? "no dia da prova para confirmar sua inscrição."
@@ -75,18 +76,12 @@ export function ConfirmacaoInscricao({
       </div>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <button
-          onClick={handleDownloadPDF}
-          className="px-5 py-2 bg-green-600 text-white rounded-md shadow hover:bg-green-700 transition cursor-pointer flex items-center justify-center gap-2"
-        >
+        <Button variant="primary" size="sm" onClick={handleDownloadPDF}>
           📄 Baixar PDF
-        </button>
-        <button
-          className="px-5 py-2 bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 transition cursor-pointer"
-          onClick={onClose}
-        >
+        </Button>
+        <Button variant="secondary" size="sm" onClick={onClose}>
           Fechar
-        </button>
+        </Button>
       </div>
     </Modal>
   );

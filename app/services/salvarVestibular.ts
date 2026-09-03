@@ -44,8 +44,8 @@ export async function salvarVestibular(dados: any) {
         transaction.update(counterRef, { lastCodigo });
       }
 
-      // Formata o código: VB2025-0001
-      const codigo = `VB2025-${String(lastCodigo).padStart(4, "0")}`;
+      // Formata o código: VB2026-0001
+      const codigo = `VB2026-${String(lastCodigo).padStart(4, "0")}`;
 
       // Cria inscrição
       const newDoc = doc(vestibularRef);

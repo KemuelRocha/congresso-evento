@@ -39,7 +39,7 @@ export function QRScanner({ onScan }: { onScan: (value: string) => void }) {
   return (
     <video
       ref={videoRef}
-      className="w-72 h-72 border-2 border-green-500 rounded-lg shadow-lg"
+      className="w-72 h-72 border-2 border-primary-500 rounded-lg shadow-card"
     />
   );
 }

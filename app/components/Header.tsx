@@ -2,9 +2,10 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useInscricoesStatus } from "../hooks/useInscricoesStatus";
+import { Button } from "./ui/Button";
 
 export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
-  const { coralAtivo, loading } = useInscricoesStatus();
+  const { coralAtivo } = useInscricoesStatus();
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
@@ -14,17 +15,15 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
     { label: "Local", href: "#location" },
   ];
 
-  if (loading) return null;
-
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white/70 backdrop-blur-md shadow-md transition-colors">
+    <header className="fixed top-0 left-0 w-full z-50 bg-white/75 backdrop-blur-md border-b border-neutral-900/5 shadow-sm transition-colors">
       <div className="container mx-auto flex items-center justify-between px-6 py-4">
-        {/* Logo / Nome do Evento */}
+        {/* Logo / Wordmark do Evento */}
         <a
           href="#hero"
-          className="text-2xl md:text-3xl font-extrabold text-green-700 hover:text-green-600 transition-colors"
+          className="flex items-baseline gap-1 font-display text-2xl md:text-3xl font-extrabold text-primary-700 hover:text-primary-600 transition-colors"
         >
-          CJ/2025
+          CJ<span className="text-accent-500">/</span>2026
         </a>
 
         {/* Menu Desktop */}
@@ -33,36 +32,35 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
             <a
               key={item.label}
               href={item.href}
-              className="text-green-800 font-medium hover:text-green-600 transition-colors"
+              className="relative text-primary-800 font-medium hover:text-primary-600 transition-colors group"
             >
               {item.label}
+              <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-accent-500 transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
         </nav>
 
         {/* Botões Desktop */}
         <div className="hidden md:flex items-center space-x-4">
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => (window.location.href = "/adm")}
-            className="bg-gray-800 hover:bg-gray-900 text-white font-semibold px-4 py-2 rounded-full shadow-lg cursor-pointer"
           >
             Área Administrativa
-          </button>
+          </Button>
 
           {coralAtivo && (
-            <button
-              onClick={onOpenModal}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer"
-            >
+            <Button variant="primary" size="md" onClick={onOpenModal}>
               Inscreva-se
-            </button>
+            </Button>
           )}
         </div>
 
         {/* Botão Mobile */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-green-800 focus:outline-none"
+          className="md:hidden text-primary-800 focus:outline-none"
         >
           {isOpen ? <X size={26} /> : <Menu size={26} />}
         </button>
@@ -76,7 +74,7 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
               <a
                 key={item.label}
                 href={item.href}
-                className="text-green-800 font-medium hover:text-green-600 transition-colors"
+                className="text-primary-800 font-medium hover:text-primary-600 transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 {item.label}
@@ -84,27 +82,29 @@ export default function Header({ onOpenModal }: { onOpenModal: () => void }) {
             ))}
 
             {/* Botão Área Administrativa */}
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={() => {
                 window.location.href = "/adm";
                 setIsOpen(false);
               }}
-              className="bg-gray-800 hover:bg-gray-900 text-white font-semibold px-4 py-2 rounded-full shadow-lg cursor-pointer"
             >
               Área Administrativa
-            </button>
+            </Button>
 
             {/* Botão Inscreva-se */}
             {coralAtivo && (
-              <button
+              <Button
+                variant="primary"
+                size="md"
                 onClick={() => {
                   onOpenModal();
                   setIsOpen(false);
                 }}
-                className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transform hover:-translate-y-1 transition-all cursor-pointer"
               >
                 Inscreva-se
-              </button>
+              </Button>
             )}
           </nav>
         </div>

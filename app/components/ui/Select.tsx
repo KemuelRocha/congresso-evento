@@ -2,13 +2,13 @@
 
 import React from "react";
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
 }
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className = "", id, ...rest }, ref) => {
+export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+  ({ label, error, className = "", id, children, ...rest }, ref) => {
     return (
       <div>
         {label && (
@@ -16,20 +16,22 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        <input
+        <select
           ref={ref}
           id={id}
           className={[
-            "w-full rounded-md border p-2 transition-colors",
+            "w-full rounded-md border p-2 transition-colors bg-white",
             "border-neutral-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500",
             error ? "border-error focus:ring-error focus:border-error" : "",
             className,
           ].join(" ")}
           {...rest}
-        />
+        >
+          {children}
+        </select>
         {error && <p className="text-error text-sm mt-1">{error}</p>}
       </div>
     );
   }
 );
-Input.displayName = "Input";
+Select.displayName = "Select";

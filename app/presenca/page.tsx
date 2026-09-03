@@ -4,6 +4,9 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useFindInscrito } from "../hooks/useFindInscrito";
 import { QRScanner } from "../components/QRScanner";
+import { Card } from "../components/ui/Card";
+import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
 
 export default function PresencaPage() {
   const [input, setInput] = useState("");
@@ -45,49 +48,49 @@ export default function PresencaPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-900 to-green-700 p-4">
-      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md text-center animate-fadeIn">
-        <h1 className="text-2xl font-extrabold mb-6 text-green-700">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-primary-900 to-primary-700 p-4">
+      <Card shadow="elevated" className="w-full max-w-md text-center animate-fadeIn">
+        <h1 className="font-display text-2xl font-extrabold mb-6 text-primary-700">
           Registro de Presença — Ensaio do Grande Coral 🎶
         </h1>
 
         {modoQR ? (
           <div className="flex flex-col items-center gap-4">
             <QRScanner onScan={handleScan} />
-            <button
-              onClick={() => setModoQR(false)}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg w-full transition"
-            >
+            <Button variant="danger" fullWidth onClick={() => setModoQR(false)}>
               Cancelar
-            </button>
+            </Button>
           </div>
         ) : (
           <>
             {!inscritoSelecionado && !confirmado && (
               <div className="flex flex-col gap-4">
-                <input
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 text-black"
+                <Input
                   placeholder="Digite seu nome ou código"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                 />
-                <button
+                <Button
+                  variant="primary"
+                  fullWidth
                   onClick={() => buscar(input)}
                   disabled={loading}
-                  className="w-full bg-green-600 hover:bg-green-500 transition text-white p-3 rounded-lg font-semibold"
                 >
                   Buscar
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="secondary"
+                  fullWidth
                   onClick={() => setModoQR(true)}
-                  className="w-full bg-blue-600 hover:bg-blue-500 transition text-white p-3 rounded-lg font-semibold"
                 >
                   Ler QR Code 📷
-                </button>
+                </Button>
               </div>
             )}
 
-            {loading && <p className="mt-4 text-gray-700">⏳ Procurando...</p>}
+            {loading && (
+              <p className="mt-4 text-neutral-700">⏳ Procurando...</p>
+            )}
 
             {/* Lista de inscritos */}
             {inscritos.length > 0 && !inscritoSelecionado && (
@@ -95,11 +98,13 @@ export default function PresencaPage() {
                 {inscritos.map((i) => (
                   <div
                     key={i.id}
-                    className="bg-green-100 border border-green-300 p-4 rounded-lg shadow cursor-pointer hover:bg-green-200"
+                    className="bg-primary-100 border border-primary-300 p-4 rounded-lg shadow-card cursor-pointer hover:bg-primary-200"
                     onClick={() => setInscritoSelecionado(i)}
                   >
-                    <p className="text-lg font-bold text-green-800">{i.nome}</p>
-                    <p className="text-gray-700 text-sm">
+                    <p className="text-lg font-bold text-primary-800">
+                      {i.nome}
+                    </p>
+                    <p className="text-neutral-700 text-sm">
                       Código: <b>{i.codigo}</b>
                     </p>
                   </div>
@@ -109,22 +114,19 @@ export default function PresencaPage() {
 
             {/* Inscrito selecionado */}
             {inscritoSelecionado && !confirmado && (
-              <div className="mt-6 bg-green-100 border border-green-300 p-5 rounded-lg shadow text-center">
-                <p className="text-xl font-bold text-green-800">
+              <div className="mt-6 bg-primary-100 border border-primary-300 p-5 rounded-lg shadow-card text-center">
+                <p className="text-xl font-bold text-primary-800">
                   {inscritoSelecionado.nome}
                 </p>
-                <p className="text-gray-700 text-sm mb-4">
+                <p className="text-neutral-700 text-sm mb-4">
                   Código: <b>{inscritoSelecionado.codigo}</b>
                 </p>
-                <button
-                  onClick={marcarPresenca}
-                  className="w-full bg-yellow-500 text-black font-bold px-6 py-3 rounded-lg hover:bg-yellow-400 transition"
-                >
+                <Button variant="accent" fullWidth onClick={marcarPresenca}>
                   ✅ Confirmar Presença
-                </button>
+                </Button>
                 <button
                   onClick={() => setInscritoSelecionado(null)}
-                  className="mt-3 text-red-500 underline"
+                  className="mt-3 text-error underline cursor-pointer"
                 >
                   Cancelar
                 </button>
@@ -134,25 +136,25 @@ export default function PresencaPage() {
             {/* Presença confirmada */}
             {confirmado && (
               <div className="mt-6 flex flex-col items-center gap-4">
-                <h2 className="text-green-600 text-xl font-bold animate-bounce">
+                <h2 className="text-primary-600 text-xl font-bold animate-bounce">
                   ✅ Presença registrada com sucesso!
                 </h2>
-                <button
+                <Button
+                  variant="secondary"
                   onClick={() => {
                     setConfirmado(false);
                     setInput("");
                     setInscritoSelecionado(null);
                     limpar();
                   }}
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold"
                 >
                   Registrar Nova Presença
-                </button>
+                </Button>
               </div>
             )}
           </>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

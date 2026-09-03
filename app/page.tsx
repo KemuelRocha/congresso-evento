@@ -15,7 +15,7 @@ export default function Home() {
   const [vestibularModalOpen, setVestibularModalOpen] = useState(false);
 
   return (
-    <div className="bg-gray-50 text-gray-900">
+    <div className="bg-neutral-50 text-neutral-900">
       <Header onOpenModal={() => setModalOpen(true)} />
       <Hero
         onOpenModal={() => setModalOpen(true)}

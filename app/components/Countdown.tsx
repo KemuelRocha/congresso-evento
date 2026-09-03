@@ -1,5 +1,6 @@
 "use client";
 import { FunctionComponent, useEffect, useState } from "react";
+import { PageSection } from "./ui/PageSection";
 
 const Countdown: FunctionComponent = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -12,7 +13,7 @@ const Countdown: FunctionComponent = () => {
   const [mounted, setMounted] = useState(false);
 
   // Data do início do congresso
-  const eventDate = new Date("2025-11-28T18:00:00");
+  const eventDate = new Date("2026-11-27T18:00:00");
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -41,39 +42,42 @@ const Countdown: FunctionComponent = () => {
   if (!mounted) return null;
 
   return (
-    <section className="py-16 bg-gradient-to-b from-green-50 to-green-100">
-      <div className="container mx-auto text-center px-4">
-        <h2 className="text-3xl md:text-4xl font-extrabold mb-8 text-green-700 animate-fadeIn">
-          Contagem regressiva!
-        </h2>
+    <PageSection tone="light" className="text-center">
+      <span className="inline-block text-xs md:text-sm font-semibold tracking-widest text-primary-600 uppercase mb-3 animate-fadeIn">
+        Falta pouco
+      </span>
+      <h2 className="font-display text-3xl md:text-4xl font-extrabold mb-10 text-primary-800 animate-fadeIn">
+        Contagem regressiva!
+      </h2>
 
-        <div className="inline-flex flex-wrap justify-center bg-green-600 text-white rounded-2xl shadow-xl overflow-hidden animate-fadeInUp">
-          {["Dias", "Horas", "Minutos", "Segundos"].map((label, i) => {
-            const value = [
-              timeLeft.days,
-              timeLeft.hours,
-              timeLeft.minutes,
-              timeLeft.seconds,
-            ][i];
-            return (
-              <div
-                key={label}
-                className="flex flex-col items-center px-6 py-4 sm:px-8 sm:py-6 border-b sm:border-b-0 sm:border-r last:border-r-0 border-green-500"
-              >
-                <div className="text-4xl sm:text-5xl font-extrabold drop-shadow-lg transition-all duration-500">
-                  {value}
-                </div>
-                <div className="uppercase text-sm">{label}</div>
+      <div className="flex flex-wrap justify-center gap-3 sm:gap-4 animate-fadeInUp">
+        {["Dias", "Horas", "Minutos", "Segundos"].map((label, i) => {
+          const value = [
+            timeLeft.days,
+            timeLeft.hours,
+            timeLeft.minutes,
+            timeLeft.seconds,
+          ][i];
+          return (
+            <div
+              key={label}
+              className="flex flex-col items-center justify-center w-20 h-20 sm:w-28 sm:h-28 rounded-2xl bg-white border border-primary-100 shadow-elevated"
+            >
+              <div className="font-display text-3xl sm:text-5xl font-extrabold text-primary-700 tabular-nums">
+                {String(value).padStart(2, "0")}
               </div>
-            );
-          })}
-        </div>
-
-        <p className="mt-6 text-green-800 text-lg px-2 sm:px-0 animate-fadeIn delay-100">
-          Prepare o seu coração para um evento inesquecível!
-        </p>
+              <div className="uppercase text-[10px] sm:text-xs text-neutral-500 tracking-wider mt-1">
+                {label}
+              </div>
+            </div>
+          );
+        })}
       </div>
-    </section>
+
+      <p className="mt-10 text-primary-800 text-lg px-2 sm:px-0 animate-fadeIn delay-100">
+        Prepare o seu coração para um evento inesquecível!
+      </p>
+    </PageSection>
   );
 };
 

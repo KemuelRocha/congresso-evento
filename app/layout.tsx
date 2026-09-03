@@ -1,22 +1,39 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Roboto, Roboto_Condensed } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Roboto_Condensed({
-  variable: "--font-geist-sans",
+// Roboto: corpo de texto — mais legível em tamanhos pequenos
+const roboto = Roboto({
+  variable: "--font-body",
   subsets: ["latin"],
-  weight: ["400", "500", "700"], // Definindo pesos
+  weight: ["400", "500", "700"],
 });
 
-const geistMono = Roboto({
-  variable: "--font-geist-mono",
+// Roboto Condensed: títulos e destaques (hero, contagem regressiva, seções)
+const robotoCondensed = Roboto_Condensed({
+  variable: "--font-display",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Congresso de Jovens - 2025",
-  description: "Inscrições para o 33 Congresso de Jovens - 2025",
+  title: "Congresso de Jovens 2026",
+  description: "Inscrições para o 34º Congresso de Jovens - 2026",
+  icons: {
+    icon: "/icon.png",
+  },
+  openGraph: {
+    title: "Congresso de Jovens 2026",
+    description: "Inscrições para o 34º Congresso de Jovens - 2026",
+    images: ["/assets/congresso-2026-01.jpg"],
+    locale: "pt_BR",
+    type: "website",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -27,7 +44,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+        className={`${roboto.variable} ${robotoCondensed.variable} font-sans antialiased`}
       >
         {children}
       </body>

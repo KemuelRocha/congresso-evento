@@ -43,8 +43,8 @@ export async function salvarInscricao(dados: any) {
         transaction.update(counterRef, { lastCodigo });
       }
 
-      // Formata o código: CJ2025-0001
-      const codigo = `CJ2025-${String(lastCodigo).padStart(4, "0")}`;
+      // Formata o código: CJ2026-0001
+      const codigo = `CJ2026-${String(lastCodigo).padStart(4, "0")}`;
 
       // Cria inscrição
       const newDoc = doc(inscricoesRef);

@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { areas } from "../mock/areas.mock";
 import { Modal } from "./ui/Modal";
+import { Input } from "./ui/Input";
+import { Select } from "./ui/Select";
+import { Checkbox } from "./ui/Checkbox";
+import { Button } from "./ui/Button";
 import { salvarVestibular } from "../services/salvarVestibular";
 import { ConfirmacaoInscricao } from "./ConfirmacaoInscricao";
 
@@ -35,7 +39,7 @@ export default function RegisterVestibularModal({
 
   const congregacoes = area ? areas[area]?.congregacoes || [] : [];
 
-  const dataLimite = new Date("2025-10-20T23:59:59");
+  const dataLimite = new Date("2026-10-20T23:59:59");
   const hoje = new Date();
   const inscricoesEncerradas = hoje > dataLimite;
 
@@ -122,9 +126,9 @@ export default function RegisterVestibularModal({
     return (
       <Modal isOpen={isOpen} onClose={onClose} title="Inscrições Encerradas">
         <div className="text-center p-6">
-          <p className="text-lg font-semibold text-red-600">
+          <p className="text-lg font-semibold text-error">
             As inscrições para o Vestibular Bíblico foram encerradas em{" "}
-            <strong>20/10/2025</strong>.
+            <strong>20/10/2026</strong>.
           </p>
         </div>
       </Modal>
@@ -168,19 +172,22 @@ export default function RegisterVestibularModal({
           <div className="flex flex-col items-center gap-2">
             <div className="flex justify-center items-center gap-2">
               <strong className="text-lg">{pixNumber}</strong>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => {
                   navigator.clipboard.writeText(pixNumber);
                   setCopiado(true);
                   setTimeout(() => setCopiado(false), 2000); // some após 2s
                 }}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-2 py-1 rounded cursor-pointer"
               >
                 Copiar
-              </button>
+              </Button>
             </div>
             {copiado && (
-              <span className="text-green-600 text-sm">Número copiado!</span>
+              <span className="text-primary-600 text-sm">
+                Número copiado!
+              </span>
             )}
           </div>
 
@@ -192,25 +199,22 @@ export default function RegisterVestibularModal({
             />
           </div>
 
-          <div>
-            <label className="block font-medium">Comprovante do PIX</label>
-            <input
-              type="file"
-              accept="image/*,application/pdf"
-              onChange={(e) => setComprovante(e.target.files?.[0] || null)}
-              className="w-full rounded-md border p-2"
-            />
-          </div>
+          <Input
+            label="Comprovante do PIX"
+            type="file"
+            accept="image/*,application/pdf"
+            onChange={(e) => setComprovante(e.target.files?.[0] || null)}
+          />
 
-          <button
+          <Button
+            variant="secondary"
+            fullWidth
             onClick={handlePagamentoSubmit}
             disabled={!comprovante || loading}
-            className="w-full rounded-md bg-purple-600 text-white p-2 disabled:bg-gray-400"
+            loading={loading}
           >
-            {loading
-              ? "Enviando..."
-              : "Enviar Comprovante e Finalizar Inscrição"}
-          </button>
+            Enviar Comprovante e Finalizar Inscrição
+          </Button>
         </div>
       </Modal>
     );
@@ -225,63 +229,53 @@ export default function RegisterVestibularModal({
     >
       <form className="space-y-4" onSubmit={handleFormSubmit}>
         {/* Área */}
-        <div>
-          <label className="block font-medium">Área</label>
-          <select
-            value={area || ""}
-            onChange={(e) => {
-              const novaArea = Number(e.target.value);
-              setArea(novaArea);
-              const congPadrao = areas[novaArea]?.congregacoes?.[0] || "";
-              setCongregacao(congPadrao);
-            }}
-            className="w-full rounded-md border p-2"
-          >
-            <option value="">Selecione</option>
-            {Array.from({ length: 20 }, (_, i) => (
-              <option key={i + 1} value={i + 1}>
-                Área {i + 1}
-              </option>
-            ))}
-          </select>
-        </div>
+        <Select
+          label="Área"
+          value={area || ""}
+          onChange={(e) => {
+            const novaArea = Number(e.target.value);
+            setArea(novaArea);
+            const congPadrao = areas[novaArea]?.congregacoes?.[0] || "";
+            setCongregacao(congPadrao);
+          }}
+        >
+          <option value="">Selecione</option>
+          {Array.from({ length: 20 }, (_, i) => (
+            <option key={i + 1} value={i + 1}>
+              Área {i + 1}
+            </option>
+          ))}
+        </Select>
 
         {/* Congregação */}
         {area && congregacoes.length > 0 && (
-          <div>
-            <label className="block font-medium">Congregação</label>
-            <select
-              value={congregacao}
-              onChange={(e) => setCongregacao(e.target.value)}
-              className="w-full rounded-md border p-2"
-            >
-              {congregacoes.map((c, i) => (
-                <option key={i} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Select
+            label="Congregação"
+            value={congregacao}
+            onChange={(e) => setCongregacao(e.target.value)}
+          >
+            {congregacoes.map((c, i) => (
+              <option key={i} value={c}>
+                {c}
+              </option>
+            ))}
+          </Select>
         )}
 
         {/* Nome */}
-        <div>
-          <label className="block font-medium">Nome Completo</label>
-          <input
-            type="text"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            className="w-full rounded-md border p-2"
-          />
-        </div>
+        <Input
+          label="Nome Completo"
+          type="text"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+        />
 
         {/* Data de Nascimento */}
         <div>
-          <label className="block font-medium">Data de Nascimento</label>
-          <input
+          <Input
+            label="Data de Nascimento"
             type="date"
             required
-            className="w-full rounded-md border p-2"
             onChange={(e) => {
               const birthDate = new Date(e.target.value);
               const today = new Date();
@@ -293,69 +287,54 @@ export default function RegisterVestibularModal({
             }}
           />
           {idade !== null && idade < 17 && (
-            <p className="text-red-500 text-sm">Idade mínima: 17 anos</p>
+            <p className="text-error text-sm">Idade mínima: 17 anos</p>
           )}
         </div>
 
         {/* Cartão de Membro */}
-        <div>
-          <label className="block font-medium">
-            Número do Cartão de Membro
-          </label>
-          <input
-            type="text"
-            value={cartaoMembro}
-            onChange={(e) => setCartaoMembro(e.target.value)}
-            className="w-full rounded-md border p-2"
-            placeholder="Digite seu número de cartão de membro"
-          />
-        </div>
+        <Input
+          label="Número do Cartão de Membro"
+          type="text"
+          value={cartaoMembro}
+          onChange={(e) => setCartaoMembro(e.target.value)}
+          placeholder="Digite seu número de cartão de membro"
+        />
 
         {/* WhatsApp */}
-        <div>
-          <label className="block font-medium">WhatsApp</label>
-          <input
-            type="tel"
-            value={whatsapp}
-            onChange={(e) => {
-              let val = e.target.value.replace(/\D/g, "");
-              if (val.length > 11) val = val.slice(0, 11);
-              if (val.length > 6)
-                val = `(${val.slice(0, 2)}) ${val.slice(2, 7)}-${val.slice(7)}`;
-              else if (val.length > 2)
-                val = `(${val.slice(0, 2)}) ${val.slice(2)}`;
-              else if (val.length > 0) val = `(${val}`;
-              setWhatsapp(val);
-            }}
-            className="w-full rounded-md border p-2"
-            placeholder="(XX) XXXXX-XXXX"
-          />
-        </div>
+        <Input
+          label="WhatsApp"
+          type="tel"
+          value={whatsapp}
+          onChange={(e) => {
+            let val = e.target.value.replace(/\D/g, "");
+            if (val.length > 11) val = val.slice(0, 11);
+            if (val.length > 6)
+              val = `(${val.slice(0, 2)}) ${val.slice(2, 7)}-${val.slice(7)}`;
+            else if (val.length > 2)
+              val = `(${val.slice(0, 2)}) ${val.slice(2)}`;
+            else if (val.length > 0) val = `(${val}`;
+            setWhatsapp(val);
+          }}
+          placeholder="(XX) XXXXX-XXXX"
+        />
 
         {/* Checkbox LGPD */}
-        <div className="flex items-start gap-2">
-          <input
-            type="checkbox"
-            id="lgpd"
-            checked={aceitouLGPD}
-            onChange={(e) => setAceitouLGPD(e.target.checked)}
-            className="mt-1"
-            required // força no HTML também
-          />
-          <label htmlFor="lgpd" className="text-sm">
-            Declaro estar ciente e de acordo com o uso dos meus dados para fins
-            desta inscrição, assumindo total responsabilidade pelas informações
-            prestadas.
-          </label>
-        </div>
+        <Checkbox
+          id="lgpd"
+          checked={aceitouLGPD}
+          onChange={(e) => setAceitouLGPD(e.target.checked)}
+          required
+          label="Declaro estar ciente e de acordo com o uso dos meus dados para fins desta inscrição, assumindo total responsabilidade pelas informações prestadas."
+        />
 
-        <button
+        <Button
           type="submit"
+          variant="secondary"
+          fullWidth
           disabled={!isValidForm || !aceitouLGPD}
-          className="w-full rounded-md bg-purple-600 text-white p-2 disabled:bg-gray-400"
         >
           Próximo: Pagamento
-        </button>
+        </Button>
       </form>
     </Modal>
   );

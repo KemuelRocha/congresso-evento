@@ -4,41 +4,37 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
+import { PageSection } from "./ui/PageSection";
 
 const About: FunctionComponent = () => {
   const images = [
-    "/assets/congresso1.jpg",
-    "/assets/congresso2.jpg",
-    "/assets/congresso3.jpg",
-    "/assets/congresso4.jpg",
-    "/assets/congresso5.jpg",
-    "/assets/congresso6.jpg",
+    "/assets/congresso-2026-01.jpg",
+    "/assets/congresso-2026-02.jpg",
+    "/assets/congresso-2026-03.jpg",
+    "/assets/congresso-2026-04.jpg",
+    "/assets/congresso-2026-05.jpg",
   ];
 
   return (
-    <section
-      id="about"
-      className="py-20 bg-gradient-to-b from-green-900 via-green-800 to-green-900 relative overflow-hidden"
-    >
-      {/* Overlay suave para destaque das imagens */}
-      <div className="absolute inset-0 bg-black/20 pointer-events-none"></div>
+    <PageSection id="about" tone="dark-gradient" overlay className="text-center">
+      <span className="inline-block text-xs md:text-sm font-semibold tracking-widest text-accent-300 uppercase mb-3 animate-fadeInUp">
+        Quem somos
+      </span>
+      <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-extrabold text-white drop-shadow-lg mb-6 animate-fadeInUp">
+        Sobre o Congresso
+      </h2>
 
-      <div className="container mx-auto px-6 relative z-10 text-center">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-green-400 drop-shadow-lg mb-6 animate-fadeInUp">
-          Sobre o Congresso
-        </h2>
+      <p className="text-neutral-100 text-lg md:text-xl max-w-3xl mx-auto mb-12 animate-fadeInUp delay-100">
+        O Congresso de Jovens da Assembleia de Deus em Petrolina e Lagoa
+        Grande é um momento único de{" "}
+        <strong>adoração, aprendizado e comunhão</strong>. Durante esses dias,
+        a juventude tem a oportunidade de fortalecer a fé, se conectar com
+        outros jovens e participar do <strong>Grande Coral de Jovens</strong>,
+        louvando a Deus com alegria e dedicação.
+      </p>
 
-        <p className="text-gray-100 text-lg md:text-xl max-w-3xl mx-auto mb-12 animate-fadeInUp delay-100">
-          O Congresso de Jovens da Assembleia de Deus em Petrolina e Lagoa
-          Grande é um momento único de{" "}
-          <strong>adoração, aprendizado e comunhão</strong>. Durante esses dias,
-          a juventude tem a oportunidade de fortalecer a fé, se conectar com
-          outros jovens e participar do <strong>Grande Coral de Jovens</strong>,
-          louvando a Deus com alegria e dedicação.
-        </p>
-
-        {/* Slider de fotos */}
-        <Swiper
+      {/* Slider de fotos */}
+      <Swiper
           modules={[Navigation, Autoplay]}
           navigation
           spaceBetween={20}
@@ -65,8 +61,7 @@ const About: FunctionComponent = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-      </div>
-    </section>
+    </PageSection>
   );
 };
 

@@ -24,6 +24,18 @@ import {
 } from "recharts";
 import { saveAs } from "file-saver";
 import { useRouter } from "next/navigation";
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Select } from "../components/ui/Select";
+import { Card } from "../components/ui/Card";
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHeaderCell,
+} from "../components/ui/Table";
 
 // Tipagem básica
 interface Inscricao {
@@ -36,7 +48,7 @@ interface Inscricao {
   congregacao: string;
   lideranca: string;
   whatsapp: string;
-  fardamentoCiente: boolean;
+  fardamentoCiente?: boolean; // não coletado a partir de 2026 (fardamento passou a ser só a camisa oficial)
   cartaoMembro: string;
   createdAt?: any; // Timestamp do Firestore
 }
@@ -392,60 +404,58 @@ export default function AdminDashboard() {
 
   if (!loggedIn) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-2xl mb-4">Login Administrativo</h1>
-        <input
-          type="text"
-          placeholder="Usuário"
-          value={user}
-          onChange={(e) => setUser(e.target.value)}
-          className="border rounded p-2 mb-2"
-        />
-        <input
-          type="password"
-          placeholder="Senha"
-          value={pass}
-          onChange={(e) => setPass(e.target.value)}
-          className="border rounded p-2 mb-2"
-        />
-        <button
-          onClick={handleLogin}
-          className="bg-blue-600 text-white rounded px-4 py-2"
-        >
-          Entrar
-        </button>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-50 p-4">
+        <Card shadow="elevated" className="w-full max-w-sm">
+          <h1 className="font-display text-2xl font-bold mb-4 text-center text-secondary-900">
+            Login Administrativo
+          </h1>
+          <div className="space-y-3">
+            <Input
+              type="text"
+              placeholder="Usuário"
+              value={user}
+              onChange={(e) => setUser(e.target.value)}
+            />
+            <Input
+              type="password"
+              placeholder="Senha"
+              value={pass}
+              onChange={(e) => setPass(e.target.value)}
+            />
+            <Button variant="secondary" fullWidth onClick={handleLogin}>
+              Entrar
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 p-6">
+    <div className="min-h-screen bg-neutral-50 text-neutral-900 p-6">
       {/* Botão voltar */}
-      <button
-        onClick={() => router.push("/")}
-        className="mb-4 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg shadow cursor-pointer"
-      >
+      <Button variant="ghost" size="sm" className="mb-4" onClick={() => router.push("/")}>
         ← Voltar para a tela inicial
-      </button>
+      </Button>
 
-      <h1 className="text-3xl font-bold mb-6 mt-4">
+      <h1 className="font-display text-3xl font-bold mb-6 mt-4 text-secondary-900">
         📊 Dashboard de Inscrições
       </h1>
 
       <div className="flex flex-col md:flex-wrap md:flex-row md:items-center md:justify-start gap-4 mb-6">
         {/* Linha de busca e área/congregação */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-          <input
+          <Input
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(1);
             }}
             placeholder="🔎 Buscar por nome / código / cartão / whatsapp..."
-            className="px-4 py-2 border rounded-lg w-full sm:w-80"
+            className="w-full sm:w-80"
           />
 
-          <select
+          <Select
             value={areaFilter}
             onChange={(e) => {
               setAreaFilter(
@@ -454,7 +464,7 @@ export default function AdminDashboard() {
               setCongregFilter("all");
               setPage(1);
             }}
-            className="border rounded p-2 w-full sm:w-48"
+            className="w-full sm:w-48"
           >
             <option value="all">Todas as Áreas</option>
             {uniqueAreas.map((a) => (
@@ -462,15 +472,15 @@ export default function AdminDashboard() {
                 Área {a}
               </option>
             ))}
-          </select>
+          </Select>
 
-          <select
+          <Select
             value={congregFilter}
             onChange={(e) => {
               setCongregFilter(e.target.value as any);
               setPage(1);
             }}
-            className="border rounded p-2 w-full sm:w-48"
+            className="w-full sm:w-48"
           >
             <option value="all">Todas as Congregações</option>
             {congregacoesForArea.map((c) => (
@@ -478,57 +488,57 @@ export default function AdminDashboard() {
                 {c}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
 
         {/* Linha de sexo e liderança */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-          <select
+          <Select
             value={sexoFilter}
             onChange={(e) => {
               setSexoFilter(e.target.value);
               setPage(1);
             }}
-            className="border rounded p-2 w-full sm:w-40"
+            className="w-full sm:w-40"
           >
             <option value="all">Sexo: Todos</option>
             <option value="M">Masculino</option>
             <option value="F">Feminino</option>
-          </select>
+          </Select>
 
-          <select
+          <Select
             value={liderFilter}
             onChange={(e) => {
               setLiderFilter(e.target.value);
               setPage(1);
             }}
-            className="border rounded p-2 w-full sm:w-40"
+            className="w-full sm:w-40"
           >
             <option value="all">Jovens / Lideranças</option>
             <option value="jovem">Jovens</option>
             <option value="lider">Lideranças</option>
-          </select>
+          </Select>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-          <input
+          <Input
             type="date"
             value={dateStart}
             onChange={(e) => {
               setDateStart(e.target.value);
               setPage(1);
             }}
-            className="border rounded p-2 w-full sm:w-40"
+            className="w-full sm:w-40"
           />
 
-          <input
+          <Input
             type="date"
             value={dateEnd}
             onChange={(e) => {
               setDateEnd(e.target.value);
               setPage(1);
             }}
-            className="border rounded p-2 w-full sm:w-40"
+            className="w-full sm:w-40"
           />
         </div>
       </div>
@@ -536,108 +546,100 @@ export default function AdminDashboard() {
       {/* ações */}
       <div className="flex items-center justify-between mb-4 gap-4">
         <div>
-          <button
-            onClick={exportFilteredCSV}
-            className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-lg shadow"
-          >
+          <Button variant="primary" size="sm" onClick={exportFilteredCSV}>
             📥 Exportar filtrados
-          </button>
+          </Button>
         </div>
 
         <div className="flex items-center gap-2">
           <label className="text-sm">Itens por página:</label>
-          <select
+          <Select
             value={pageSize}
             onChange={(e) => {
               setPageSize(Number(e.target.value));
               setPage(1);
             }}
-            className="border rounded p-2"
+            className="w-auto"
           >
             <option value={10}>10</option>
             <option value={25}>25</option>
             <option value={50}>50</option>
             <option value={100}>100</option>
-          </select>
+          </Select>
         </div>
       </div>
 
       {/* tabela */}
-      <div className="bg-white rounded-2xl shadow overflow-x-auto">
-        <table className="min-w-full text-left">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-3">Código</th>
-              <th className="px-4 py-3">Nome</th>
-              <th className="px-4 py-3">Cartão</th>
-              <th className="px-4 py-3">WhatsApp</th>
-              <th className="px-4 py-3">Sexo</th>
-              <th className="px-4 py-3">Idade</th>
-              <th className="px-4 py-3">Área</th>
-              <th className="px-4 py-3">Congregação</th>
-              <th className="px-4 py-3">Liderança</th>
-              <th className="px-4 py-3">Data</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginated.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={10}
-                  className="px-4 py-6 text-center text-gray-500"
-                >
-                  Nenhuma inscrição encontrada.
-                </td>
-              </tr>
-            ) : (
-              paginated.map((i) => {
-                const date = toDate(i.createdAt);
-                return (
-                  <tr key={i.id} className="border-b last:border-b-0">
-                    <td className="px-4 py-3">{i.codigo ?? "-"}</td>
-                    <td className="px-4 py-3">{i.nome}</td>
-                    <td className="px-4 py-3">{i.cartaoMembro ?? "-"}</td>
-                    <td className="px-4 py-3">{i.whatsapp ?? "-"}</td>
-                    <td className="px-4 py-3">{i.sexo ?? "-"}</td>
-                    <td className="px-4 py-3">{i.idade ?? "-"}</td>
-                    <td className="px-4 py-3">{i.area ?? "-"}</td>
-                    <td className="px-4 py-3">{i.congregacao ?? "-"}</td>
-                    <td className="px-4 py-3">{i.lideranca ?? "-"}</td>
-                    <td className="px-4 py-3">
-                      {date ? date.toLocaleString() : "-"}
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableHeaderCell>Código</TableHeaderCell>
+            <TableHeaderCell>Nome</TableHeaderCell>
+            <TableHeaderCell>Cartão</TableHeaderCell>
+            <TableHeaderCell>WhatsApp</TableHeaderCell>
+            <TableHeaderCell>Sexo</TableHeaderCell>
+            <TableHeaderCell>Idade</TableHeaderCell>
+            <TableHeaderCell>Área</TableHeaderCell>
+            <TableHeaderCell>Congregação</TableHeaderCell>
+            <TableHeaderCell>Liderança</TableHeaderCell>
+            <TableHeaderCell>Data</TableHeaderCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {paginated.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={10} className="py-6 text-center text-neutral-500">
+                Nenhuma inscrição encontrada.
+              </TableCell>
+            </TableRow>
+          ) : (
+            paginated.map((i) => {
+              const date = toDate(i.createdAt);
+              return (
+                <TableRow key={i.id}>
+                  <TableCell>{i.codigo ?? "-"}</TableCell>
+                  <TableCell>{i.nome}</TableCell>
+                  <TableCell>{i.cartaoMembro ?? "-"}</TableCell>
+                  <TableCell>{i.whatsapp ?? "-"}</TableCell>
+                  <TableCell>{i.sexo ?? "-"}</TableCell>
+                  <TableCell>{i.idade ?? "-"}</TableCell>
+                  <TableCell>{i.area ?? "-"}</TableCell>
+                  <TableCell>{i.congregacao ?? "-"}</TableCell>
+                  <TableCell>{i.lideranca ?? "-"}</TableCell>
+                  <TableCell>{date ? date.toLocaleString() : "-"}</TableCell>
+                </TableRow>
+              );
+            })
+          )}
+        </TableBody>
+      </Table>
 
       {/* paginação */}
       <div className="flex items-center justify-between mt-4">
-        <div className="text-sm text-gray-600">
+        <div className="text-sm text-neutral-600">
           Mostrando {paginated.length} de {filtered.length} resultados
         </div>
 
         <div className="flex items-center gap-2">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
-            className="px-3 py-1 border rounded disabled:opacity-50"
             disabled={page === 1}
           >
             {"<"}
-          </button>
+          </Button>
           <span className="px-3 py-1 border rounded bg-white">
             Página {page} / {totalPages}
           </span>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            className="px-3 py-1 border rounded disabled:opacity-50"
             disabled={page === totalPages}
           >
             {">"}
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -645,26 +647,26 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 mt-6">
         {/* Total de Vagas */}
         <div className="bg-white p-6 rounded-2xl shadow text-center">
-          <h3 className="text-lg font-semibold text-gray-600">
+          <h3 className="text-lg font-semibold text-neutral-600">
             Total de Vagas
           </h3>
-          <p className="text-3xl font-bold text-green-500">{totalVagas}</p>
+          <p className="text-3xl font-bold text-primary-600">{totalVagas}</p>
         </div>
 
         {/* Total de Inscrições */}
         <div className="bg-white p-6 rounded-2xl shadow text-center">
-          <h3 className="text-lg font-semibold text-gray-600">Inscrições</h3>
-          <p className="text-3xl font-bold text-blue-500">
+          <h3 className="text-lg font-semibold text-neutral-600">Inscrições</h3>
+          <p className="text-3xl font-bold text-info">
             {inscricoes.length}
           </p>
         </div>
 
         {/* Vagas Restantes */}
         <div className="bg-white p-6 rounded-2xl shadow text-center">
-          <h3 className="text-lg font-semibold text-gray-600">
+          <h3 className="text-lg font-semibold text-neutral-600">
             Vagas Restantes
           </h3>
-          <p className="text-3xl font-bold text-yellow-500">
+          <p className="text-3xl font-bold text-accent-600">
             {totalVagas !== null
               ? totalVagas - inscricoes.length
               : "Carregando..."}
@@ -673,8 +675,8 @@ export default function AdminDashboard() {
 
         {/* Ocupação (%) */}
         <div className="bg-white p-6 rounded-2xl shadow text-center">
-          <h3 className="text-lg font-semibold text-gray-600">% de Ocupação</h3>
-          <p className="text-3xl font-bold text-purple-500">
+          <h3 className="text-lg font-semibold text-neutral-600">% de Ocupação</h3>
+          <p className="text-3xl font-bold text-secondary-600">
             {totalVagas !== null
               ? ((inscricoes.length / totalVagas) * 100).toFixed(1) + "%"
               : "Carregando..."}
@@ -787,11 +789,11 @@ export default function AdminDashboard() {
 
         {/* Cards resumo */}
         <div className="grid gap-6 mb-6 w-full">
-          <div className="bg-gray-50 p-4 rounded-xl text-center shadow w-full">
-            <h3 className="text-sm font-medium text-gray-600">
+          <div className="bg-neutral-50 p-4 rounded-xl text-center shadow w-full">
+            <h3 className="text-sm font-medium text-neutral-600">
               Total inscritos
             </h3>
-            <p className="text-2xl font-bold text-blue-500">
+            <p className="text-2xl font-bold text-info">
               {vestibular.length}
             </p>
           </div>
@@ -800,16 +802,16 @@ export default function AdminDashboard() {
         {/* Filtros */}
         <div className="flex flex-col md:flex-wrap md:flex-row md:items-center md:justify-start gap-4 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-            <input
+            <Input
               value={searchVest}
               onChange={(e) => {
                 setSearchVest(e.target.value);
                 setPageVest(1);
               }}
               placeholder="🔎 Buscar por nome / código / cartão / whatsapp..."
-              className="px-4 py-2 border rounded-lg w-full sm:w-80"
+              className="w-full sm:w-80"
             />
-            <select
+            <Select
               value={areaVest}
               onChange={(e) => {
                 setAreaVest(
@@ -818,7 +820,7 @@ export default function AdminDashboard() {
                 setCongregVest("all");
                 setPageVest(1);
               }}
-              className="border rounded p-2 w-full sm:w-48"
+              className="w-full sm:w-48"
             >
               <option value="all">Todas as Áreas</option>
               {uniqueAreas.map((a) => (
@@ -826,14 +828,14 @@ export default function AdminDashboard() {
                   Área {a}
                 </option>
               ))}
-            </select>
-            <select
+            </Select>
+            <Select
               value={congregVest}
               onChange={(e) => {
                 setCongregVest(e.target.value);
                 setPageVest(1);
               }}
-              className="border rounded p-2 w-full sm:w-48"
+              className="w-full sm:w-48"
             >
               <option value="all">Todas as Congregações</option>
               {congregacoesForAreaVest.map((c) => (
@@ -841,144 +843,136 @@ export default function AdminDashboard() {
                   {c}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div className="flex items-center justify-between w-full">
             <div>
-              <button
-                onClick={exportVestCSV}
-                className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-lg shadow cursor-pointer"
-              >
+              <Button variant="primary" size="sm" onClick={exportVestCSV}>
                 📥 Exportar filtrados
-              </button>
+              </Button>
             </div>
 
             <div className="flex items-center gap-2">
               <label className="text-sm">Itens por página:</label>
-              <select
+              <Select
                 value={pageSizeVest}
                 onChange={(e) => {
                   setPageSizeVest(Number(e.target.value));
                   setPageVest(1);
                 }}
-                className="border rounded p-2"
+                className="w-auto"
               >
                 <option value={10}>10</option>
                 <option value={25}>25</option>
                 <option value={50}>50</option>
                 <option value={100}>100</option>
-              </select>
+              </Select>
             </div>
           </div>
         </div>
 
         {/* Tabela */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-4 py-3">Código</th>
-                <th className="px-4 py-3">Nome</th>
-                <th className="px-4 py-3">Idade</th>
-                <th className="px-4 py-3">Cartão de membro</th>
-                <th className="px-4 py-3">WhatsApp</th>
-                <th className="px-4 py-3">Área</th>
-                <th className="px-4 py-3">Congregação</th>
-                <th className="px-4 py-3">Comprovante</th>
-                <th className="px-4 py-3">Data</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedVest.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={9}
-                    className="px-4 py-6 text-center text-gray-500"
-                  >
-                    Nenhuma inscrição do vestibular encontrada.
-                  </td>
-                </tr>
-              ) : (
-                paginatedVest.map((v) => {
-                  const date = v.createdAt?.toDate
-                    ? v.createdAt.toDate()
-                    : new Date(v.createdAt);
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell>Código</TableHeaderCell>
+              <TableHeaderCell>Nome</TableHeaderCell>
+              <TableHeaderCell>Idade</TableHeaderCell>
+              <TableHeaderCell>Cartão de membro</TableHeaderCell>
+              <TableHeaderCell>WhatsApp</TableHeaderCell>
+              <TableHeaderCell>Área</TableHeaderCell>
+              <TableHeaderCell>Congregação</TableHeaderCell>
+              <TableHeaderCell>Comprovante</TableHeaderCell>
+              <TableHeaderCell>Data</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {paginatedVest.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={9} className="py-6 text-center text-neutral-500">
+                  Nenhuma inscrição do vestibular encontrada.
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedVest.map((v) => {
+                const date = v.createdAt?.toDate
+                  ? v.createdAt.toDate()
+                  : new Date(v.createdAt);
 
-                  const comprovanteUrl =
-                    v.comprovante &&
-                    v.comprovante.toLowerCase().endsWith(".pdf")
-                      ? v.comprovante
-                          .replace("/image/upload/", "/image/upload/pg_1/")
-                          .replace(/\.pdf$/i, ".jpg")
-                      : v.comprovante;
-                  return (
-                    <tr key={v.id} className="border-b last:border-b-0">
-                      <td className="px-4 py-3">{v.codigo ?? "-"}</td>
-                      <td className="px-4 py-3">{v.nome ?? "-"}</td>
-                      <td className="px-4 py-3">{v.idade ?? "-"}</td>
-                      <td className="px-4 py-3">{v.cartaoMembro ?? "-"}</td>
-                      <td className="px-4 py-3">{v.whatsapp ?? "-"}</td>
-                      <td className="px-4 py-3">{v.area ?? "-"}</td>
-                      <td className="px-4 py-3">{v.congregacao ?? "-"}</td>
-                      <td className="px-4 py-3">
-                        {comprovanteUrl ? (
-                          <a
-                            href={comprovanteUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 underline"
-                          >
-                            Ver Comprovante
-                          </a>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        {date ? date.toLocaleString() : "-"}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                const comprovanteUrl =
+                  v.comprovante &&
+                  v.comprovante.toLowerCase().endsWith(".pdf")
+                    ? v.comprovante
+                        .replace("/image/upload/", "/image/upload/pg_1/")
+                        .replace(/\.pdf$/i, ".jpg")
+                    : v.comprovante;
+                return (
+                  <TableRow key={v.id}>
+                    <TableCell>{v.codigo ?? "-"}</TableCell>
+                    <TableCell>{v.nome ?? "-"}</TableCell>
+                    <TableCell>{v.idade ?? "-"}</TableCell>
+                    <TableCell>{v.cartaoMembro ?? "-"}</TableCell>
+                    <TableCell>{v.whatsapp ?? "-"}</TableCell>
+                    <TableCell>{v.area ?? "-"}</TableCell>
+                    <TableCell>{v.congregacao ?? "-"}</TableCell>
+                    <TableCell>
+                      {comprovanteUrl ? (
+                        <a
+                          href={comprovanteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-info underline"
+                        >
+                          Ver Comprovante
+                        </a>
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+                    <TableCell>{date ? date.toLocaleString() : "-"}</TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
 
         {/* Paginação */}
         <div className="flex items-center justify-between mt-4">
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-neutral-600">
             Mostrando {paginatedVest.length} de {filteredVest.length} resultados
           </div>
           <div className="flex items-center gap-2">
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setPageVest((p) => Math.max(1, p - 1))}
-              className="px-3 py-1 border rounded disabled:opacity-50"
               disabled={pageVest === 1}
             >
               {"<"}
-            </button>
+            </Button>
             <span className="px-3 py-1 border rounded bg-white">
               Página {pageVest} / {totalPagesVest}
             </span>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() =>
                 setPageVest((p) => Math.min(totalPagesVest, p + 1))
               }
-              className="px-3 py-1 border rounded disabled:opacity-50"
               disabled={pageVest === totalPagesVest}
             >
               {">"}
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* Gráficos */}
         <div className="grid w-full gap-6 mt-6">
           {/* Inscrições por Área */}
-          <div className="bg-gray-50 p-4 rounded-xl shadow">
-            <h3 className="text-sm font-medium text-gray-600 mb-2">
+          <div className="bg-neutral-50 p-4 rounded-xl shadow-card">
+            <h3 className="text-sm font-medium text-neutral-600 mb-2">
               Inscrições por Área
             </h3>
             <ResponsiveContainer width="100%" height={250}>

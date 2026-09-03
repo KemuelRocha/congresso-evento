@@ -25,7 +25,7 @@ export const Modal: React.FC<ModalProps> = ({
           onClick={onClose} // fechar ao clicar no fundo
         >
           <motion.div
-            className="bg-white rounded-2xl shadow-xl p-6 max-w-lg w-full relative max-h-[80vh] overflow-y-auto"
+            className="bg-white rounded-2xl shadow-elevated p-6 max-w-lg w-full relative max-h-[80vh] overflow-y-auto"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
@@ -33,13 +33,17 @@ export const Modal: React.FC<ModalProps> = ({
           >
             {/* Botão de Fechar */}
             <button
-              className="absolute top-3 right-3 text-gray-600 hover:text-black"
+              className="absolute top-3 right-3 text-neutral-500 hover:text-neutral-900 cursor-pointer"
               onClick={onClose}
             >
               ✕
             </button>
 
-            {title && <h2 className="text-xl font-bold mb-4">{title}</h2>}
+            {title && (
+              <h2 className="font-display text-xl font-bold mb-4 text-secondary-900">
+                {title}
+              </h2>
+            )}
 
             {/* Conteúdo scrollável */}
             <div className="overflow-y-auto">{children}</div>
