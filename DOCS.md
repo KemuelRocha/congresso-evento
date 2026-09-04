@@ -30,11 +30,13 @@ Modal aberto a partir do Header/Hero (`RegisterModal.tsx`). Formulário com áre
 
 Modal em 3 etapas (`RegisterVestibularModal.tsx`): formulário → pagamento via PIX (com upload obrigatório do comprovante) → confirmação.
 
-- **Acesso**: público, condicionado a `abertas/vestibular.ativo == true` **e** a uma data-limite fixa no código (`2026-10-20T23:59:59`).
+- **Acesso**: público, condicionado a `abertas/vestibular.ativo == true` **e** a uma data-limite fixa no código (`2026-09-12T23:59:59`).
+- **Link direto — `/vestibular`**: rota dedicada que carrega a landing normalmente e já abre o modal de inscrição do Vestibular automaticamente (via `LandingPage` com `autoOpen="vestibular"`, em [app/vestibular/page.tsx](app/vestibular/page.tsx)). Útil para divulgar um link específico quando só o Vestibular está com inscrições abertas (o Grande Coral tem o mesmo mecanismo disponível, bastando usar `autoOpen="coral"` numa rota equivalente caso necessário no futuro).
 - **Grava em**: coleção `vestibular` (campos: `nome`, `idade`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `comprovante` [URL Cloudinary], `codigo`, `createdAt`).
 - **Código gerado**: sequencial `VB2026-0001`... via `counters/vestibular` ([app/services/salvarVestibular.ts](app/services/salvarVestibular.ts)).
 - **Upload de comprovante**: `POST /api/upload`, envia o arquivo para o Cloudinary (pasta `comprovantes`).
 - **Regra de negócio**: idade mínima 17 anos; não permite duas inscrições com o mesmo `cartaoMembro`.
+- ⚠️ **Nota**: o link `/vestibular` abre o formulário independente da flag `abertas/vestibular` — ele só é bloqueado pela data-limite (`12/09/2026`) já embutida no componente. Se as inscrições forem encerradas manualmente antes dessa data (desligando a flag), o link direto ainda abriria o formulário; considere isso ao divulgar o link.
 
 ### 4. Confirmação de Inscrição
 

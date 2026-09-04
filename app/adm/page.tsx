@@ -202,6 +202,12 @@ export default function AdminDashboard() {
     return Array.from(setAreas).sort((a, b) => a - b);
   }, [inscricoes]);
 
+  const uniqueAreasVest = useMemo(() => {
+    const setAreas = new Set<number>();
+    vestibular.forEach((v) => v.area && setAreas.add(v.area));
+    return Array.from(setAreas).sort((a, b) => a - b);
+  }, [vestibular]);
+
   const congregacoesForArea = useMemo(() => {
     if (areaFilter === "all") {
       const setCong = new Set<string>();
@@ -386,7 +392,7 @@ export default function AdminDashboard() {
   };
 
   // Contar inscrições por área
-  const inscricoesPorArea = uniqueAreas.map((area) => ({
+  const inscricoesPorArea = uniqueAreasVest.map((area) => ({
     area,
     total: vestibular.filter((v) => v.area === area).length,
   }));
@@ -823,7 +829,7 @@ export default function AdminDashboard() {
               className="w-full sm:w-48"
             >
               <option value="all">Todas as Áreas</option>
-              {uniqueAreas.map((a) => (
+              {uniqueAreasVest.map((a) => (
                 <option key={a} value={a}>
                   Área {a}
                 </option>

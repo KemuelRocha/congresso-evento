@@ -1,40 +1,6 @@
 "use client";
-import Header from "./components/Header";
-import Hero from "./components/Hero";
-import Countdown from "./components/Countdown";
-import About from "./components/About";
-import Schedule from "./components/Schedule";
-import Location from "./components/Location";
-import Footer from "./components/Footer";
-import RegisterModal from "./components/RegisterModal";
-import { useState } from "react";
-import RegisterVestibularModal from "./components/RegisterVestibularModal";
+import LandingPage from "./components/LandingPage";
 
 export default function Home() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [vestibularModalOpen, setVestibularModalOpen] = useState(false);
-
-  return (
-    <div className="bg-neutral-50 text-neutral-900">
-      <Header onOpenModal={() => setModalOpen(true)} />
-      <Hero
-        onOpenModal={() => setModalOpen(true)}
-        onOpenVestibularModal={() => setVestibularModalOpen(true)}
-      />
-      <Countdown />
-      <About />
-      <Schedule />
-      <Location />
-      <Footer />
-
-      {/* Modal de Inscrição */}
-      <RegisterModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
-
-      {/* Modal de Inscrição no Vestibular Bíblico */}
-      <RegisterVestibularModal
-        isOpen={vestibularModalOpen}
-        onClose={() => setVestibularModalOpen(false)}
-      />
-    </div>
-  );
+  return <LandingPage />;
 }
