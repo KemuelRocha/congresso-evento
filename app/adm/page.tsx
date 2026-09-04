@@ -243,6 +243,14 @@ export default function AdminDashboard() {
     return isNaN(parsed.getTime()) ? null : parsed;
   };
 
+  // formata a data de nascimento (string "AAAA-MM-DD") sem conversão de fuso
+  const formatDataNascimento = (val: any): string => {
+    if (!val || typeof val !== "string") return "-";
+    const [y, m, d] = val.split("-");
+    if (!y || !m || !d) return "-";
+    return `${d}/${m}/${y}`;
+  };
+
   // filtro principal
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
@@ -375,14 +383,17 @@ export default function AdminDashboard() {
   }, [filteredVest, pageVest, pageSizeVest]);
 
   const exportVestCSV = () => {
-    const header = "Codigo,Nome,Idade,Cartao,WhatsApp,Area,Congregacao,Data\n";
+    const header =
+      "Codigo,Nome,Idade,Data de Nascimento,Cartao,WhatsApp,Area,Congregacao,Data\n";
     const rows = filteredVest.map((v) => {
       const date = v.createdAt?.toDate
         ? v.createdAt.toDate()
         : new Date(v.createdAt);
       return `"${v.codigo ?? ""}","${(v.nome ?? "").replace(/"/g, '""')}",${
         v.idade ?? ""
-      },"${v.cartaoMembro ?? ""}",${v.whatsapp ?? ""},${v.area ?? ""},"${(
+      },"${formatDataNascimento(v.dataNascimento)}","${
+        v.cartaoMembro ?? ""
+      }",${v.whatsapp ?? ""},${v.area ?? ""},"${(
         v.congregacao ?? ""
       ).replace(/"/g, '""')}",${date.toISOString()}`;
     });
@@ -885,6 +896,7 @@ export default function AdminDashboard() {
               <TableHeaderCell>Código</TableHeaderCell>
               <TableHeaderCell>Nome</TableHeaderCell>
               <TableHeaderCell>Idade</TableHeaderCell>
+              <TableHeaderCell>Data de Nascimento</TableHeaderCell>
               <TableHeaderCell>Cartão de membro</TableHeaderCell>
               <TableHeaderCell>WhatsApp</TableHeaderCell>
               <TableHeaderCell>Área</TableHeaderCell>
@@ -896,7 +908,7 @@ export default function AdminDashboard() {
           <TableBody>
             {paginatedVest.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="py-6 text-center text-neutral-500">
+                <TableCell colSpan={10} className="py-6 text-center text-neutral-500">
                   Nenhuma inscrição do vestibular encontrada.
                 </TableCell>
               </TableRow>
@@ -918,6 +930,7 @@ export default function AdminDashboard() {
                     <TableCell>{v.codigo ?? "-"}</TableCell>
                     <TableCell>{v.nome ?? "-"}</TableCell>
                     <TableCell>{v.idade ?? "-"}</TableCell>
+                    <TableCell>{formatDataNascimento(v.dataNascimento)}</TableCell>
                     <TableCell>{v.cartaoMembro ?? "-"}</TableCell>
                     <TableCell>{v.whatsapp ?? "-"}</TableCell>
                     <TableCell>{v.area ?? "-"}</TableCell>

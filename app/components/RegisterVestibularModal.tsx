@@ -24,6 +24,7 @@ export default function RegisterVestibularModal({
 
   const [nome, setNome] = useState("");
   const [idade, setIdade] = useState<number | null>(null);
+  const [dataNascimento, setDataNascimento] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [area, setArea] = useState<number | null>(null);
   const [congregacao, setCongregacao] = useState<string>("");
@@ -91,6 +92,7 @@ export default function RegisterVestibularModal({
       const formData = {
         nome,
         idade,
+        dataNascimento,
         whatsapp,
         area,
         congregacao,
@@ -105,6 +107,7 @@ export default function RegisterVestibularModal({
         // Reset
         setNome("");
         setIdade(null);
+        setDataNascimento("");
         setWhatsapp("");
         setArea(null);
         setCongregacao("");
@@ -276,7 +279,9 @@ export default function RegisterVestibularModal({
             label="Data de Nascimento"
             type="date"
             required
+            value={dataNascimento}
             onChange={(e) => {
+              setDataNascimento(e.target.value);
               const birthDate = new Date(e.target.value);
               const today = new Date();
               let age = today.getFullYear() - birthDate.getFullYear();

@@ -32,7 +32,7 @@ Modal em 3 etapas (`RegisterVestibularModal.tsx`): formulário → pagamento via
 
 - **Acesso**: público, condicionado a `abertas/vestibular.ativo == true` **e** a uma data-limite fixa no código (`2026-09-12T23:59:59`).
 - **Link direto — `/vestibular`**: rota dedicada que carrega a landing normalmente e já abre o modal de inscrição do Vestibular automaticamente (via `LandingPage` com `autoOpen="vestibular"`, em [app/vestibular/page.tsx](app/vestibular/page.tsx)). Útil para divulgar um link específico quando só o Vestibular está com inscrições abertas (o Grande Coral tem o mesmo mecanismo disponível, bastando usar `autoOpen="coral"` numa rota equivalente caso necessário no futuro).
-- **Grava em**: coleção `vestibular` (campos: `nome`, `idade`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `comprovante` [URL Cloudinary], `codigo`, `createdAt`).
+- **Grava em**: coleção `vestibular` (campos: `nome`, `idade`, `dataNascimento`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `comprovante` [URL Cloudinary], `codigo`, `createdAt`).
 - **Código gerado**: sequencial `VB2026-0001`... via `counters/vestibular` ([app/services/salvarVestibular.ts](app/services/salvarVestibular.ts)).
 - **Upload de comprovante**: `POST /api/upload`, envia o arquivo para o Cloudinary (pasta `comprovantes`).
 - **Regra de negócio**: idade mínima 17 anos; não permite duas inscrições com o mesmo `cartaoMembro`.
@@ -77,7 +77,7 @@ Tela standalone (não usa o Header/Footer do site) para marcar presença dos ins
 | Coleção / Documento | Descrição |
 |---|---|
 | `inscricoes` | Inscrições do Grande Coral. Campos principais: `nome`, `nomeLower`, `sexo`, `idade`, `lideranca`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `codigo`, `createdAt`, `presencas.<data>` (mapa de booleanos por dia). |
-| `vestibular` | Inscrições do Vestibular Bíblico. Campos: `nome`, `idade`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `comprovante`, `codigo`, `createdAt`. |
+| `vestibular` | Inscrições do Vestibular Bíblico. Campos: `nome`, `idade`, `dataNascimento`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `comprovante`, `codigo`, `createdAt`. |
 | `counters/inscricoes` | Contador (`lastCodigo`) usado para gerar os códigos `CJ2026-XXXX`. |
 | `counters/vestibular` | Contador (`lastCodigo`) usado para gerar os códigos `VB2026-XXXX`. |
 | `abertas/coral` | Flag (`ativo: boolean`) que liga/desliga a exibição do botão de inscrição no Grande Coral. |
