@@ -153,7 +153,8 @@ export default function RegisterVestibularModal({
   }
 
   if (step === "pagamento") {
-    const pixNumber = "(87) 98833-7969"; // número do PIX
+    const pixCopiaECola =
+      "00020126580014BR.GOV.BCB.PIX01363fa38e7e-0810-43ce-a7c4-b49d1d9f4d4552040000530398654045.005802BR5923Kemuel dos Santos Rocha6009SAO PAULO62140510WzfKnYbg4X6304A712"; // chave PIX copia e cola
     const valor = "R$ 5,00"; // valor do pagamento
 
     return (
@@ -164,7 +165,7 @@ export default function RegisterVestibularModal({
       >
         <div className="space-y-4">
           <p className="text-center">
-            Faça o pagamento via Pix usando a chave:
+            Faça o pagamento via Pix usando o QR Code ou a chave copia e cola:
           </p>
 
           {/* Valor a pagar */}
@@ -173,13 +174,15 @@ export default function RegisterVestibularModal({
           </p>
 
           <div className="flex flex-col items-center gap-2">
-            <div className="flex justify-center items-center gap-2">
-              <strong className="text-lg">{pixNumber}</strong>
+            <div className="flex justify-center items-center gap-2 max-w-full">
+              <strong className="text-sm break-all text-center">
+                {pixCopiaECola}
+              </strong>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  navigator.clipboard.writeText(pixNumber);
+                  navigator.clipboard.writeText(pixCopiaECola);
                   setCopiado(true);
                   setTimeout(() => setCopiado(false), 2000); // some após 2s
                 }}
@@ -189,7 +192,7 @@ export default function RegisterVestibularModal({
             </div>
             {copiado && (
               <span className="text-primary-600 text-sm">
-                Número copiado!
+                Chave copiada!
               </span>
             )}
           </div>
