@@ -7,13 +7,15 @@ import { Button } from "./ui/Button";
 interface HeroProps {
   onOpenModal: () => void;
   onOpenVestibularModal: () => void;
+  onOpenJogralModal: () => void;
 }
 
 const Hero: FunctionComponent<HeroProps> = ({
   onOpenModal,
   onOpenVestibularModal,
+  onOpenJogralModal,
 }) => {
-  const { coralAtivo, vestibularAtivo } = useInscricoesStatus();
+  const { coralAtivo, vestibularAtivo, jogralAtivo } = useInscricoesStatus();
 
   return (
     <section
@@ -61,6 +63,16 @@ const Hero: FunctionComponent<HeroProps> = ({
               className="animate-fadeInUp delay-300 !border-white/40 !text-white hover:!bg-white/10"
             >
               Inscreva-se no Vestibular Bíblico
+            </Button>
+          )}
+          {jogralAtivo && (
+            <Button
+              variant="ghost"
+              size="lg"
+              onClick={onOpenJogralModal}
+              className="animate-fadeInUp delay-300 !border-white/40 !text-white hover:!bg-white/10"
+            >
+              Inscreva-se no Jogral
             </Button>
           )}
         </div>

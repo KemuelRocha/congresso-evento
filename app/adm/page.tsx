@@ -58,10 +58,15 @@ export default function AdminDashboard() {
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
 
+  const [activeTab, setActiveTab] = useState<"coral" | "vestibular" | "jogral">(
+    "coral"
+  );
+
   const [inscricoes, setInscricoes] = useState<Inscricao[]>([]);
   const [totalVagas, setTotalVagas] = useState<number | null>(null);
 
   const [vestibular, setVestibular] = useState<any[]>([]);
+  const [jogral, setJogral] = useState<any[]>([]);
 
   // filtros e paginação
   const [search, setSearch] = useState("");
@@ -82,6 +87,14 @@ export default function AdminDashboard() {
   const [congregVest, setCongregVest] = useState<string | "all">("all");
   const [pageVest, setPageVest] = useState(1);
   const [pageSizeVest, setPageSizeVest] = useState(10);
+
+  // filtros jogral
+  const [searchJog, setSearchJog] = useState("");
+  const [sexoJog, setSexoJog] = useState<string | "all">("all");
+  const [areaJog, setAreaJog] = useState<number | "all">("all");
+  const [congregJog, setCongregJog] = useState<string | "all">("all");
+  const [pageJog, setPageJog] = useState(1);
+  const [pageSizeJog, setPageSizeJog] = useState(10);
 
   const router = useRouter();
 
@@ -132,6 +145,20 @@ export default function AdminDashboard() {
     };
 
     fetchVestibular();
+  }, []);
+
+  useEffect(() => {
+    const fetchJogral = async () => {
+      const q = query(collection(db, "jogral"), orderBy("createdAt", "desc"));
+      const snapshot = await getDocs(q);
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setJogral(data);
+    };
+
+    fetchJogral();
   }, []);
 
   // --- Agrupamentos ---
@@ -233,6 +260,25 @@ export default function AdminDashboard() {
       .forEach((i) => i.congregacao && setCong.add(i.congregacao));
     return Array.from(setCong).sort();
   }, [vestibular, areaVest]);
+
+  const uniqueAreasJog = useMemo(() => {
+    const setAreas = new Set<number>();
+    jogral.forEach((j) => j.area && setAreas.add(j.area));
+    return Array.from(setAreas).sort((a, b) => a - b);
+  }, [jogral]);
+
+  const congregacoesForAreaJog = useMemo(() => {
+    if (areaJog === "all") {
+      const setCong = new Set<string>();
+      jogral.forEach((j) => j.congregacao && setCong.add(j.congregacao));
+      return Array.from(setCong).sort();
+    }
+    const setCong = new Set<string>();
+    jogral
+      .filter((j) => j.area === areaJog)
+      .forEach((j) => j.congregacao && setCong.add(j.congregacao));
+    return Array.from(setCong).sort();
+  }, [jogral, areaJog]);
 
   // converte createdAt (Timestamp) para Date
   const toDate = (val: any): Date | null => {
@@ -408,6 +454,62 @@ export default function AdminDashboard() {
     total: vestibular.filter((v) => v.area === area).length,
   }));
 
+  const filteredJog = useMemo(() => {
+    const s = searchJog.trim().toLowerCase();
+    return jogral.filter((j) => {
+      if (s) {
+        const haystack = `${j.nome ?? ""} ${j.codigo ?? ""} ${
+          j.cartaoMembro ?? ""
+        } ${j.whatsapp ?? ""}`.toLowerCase();
+        if (!haystack.includes(s)) return false;
+      }
+      if (sexoJog !== "all" && j.sexo !== sexoJog) return false;
+      if (areaJog !== "all" && j.area !== areaJog) return false;
+      if (congregJog !== "all" && j.congregacao !== congregJog) return false;
+      return true;
+    });
+  }, [jogral, searchJog, sexoJog, areaJog, congregJog]);
+
+  const totalPagesJog = Math.max(1, Math.ceil(filteredJog.length / pageSizeJog));
+  useEffect(() => {
+    if (pageJog > totalPagesJog) setPageJog(1);
+  }, [totalPagesJog, pageJog]);
+
+  const paginatedJog = useMemo(() => {
+    const start = (pageJog - 1) * pageSizeJog;
+    return filteredJog.slice(start, start + pageSizeJog);
+  }, [filteredJog, pageJog, pageSizeJog]);
+
+  const exportJogCSV = () => {
+    const header =
+      "Codigo,Nome,Sexo,Idade,Cartao,WhatsApp,Area,Congregacao,Data\n";
+    const rows = filteredJog.map((j) => {
+      const date = j.createdAt?.toDate
+        ? j.createdAt.toDate()
+        : new Date(j.createdAt);
+      return `"${j.codigo ?? ""}","${(j.nome ?? "").replace(/"/g, '""')}",${
+        j.sexo ?? ""
+      },${j.idade ?? ""},"${j.cartaoMembro ?? ""}",${j.whatsapp ?? ""},${
+        j.area ?? ""
+      },"${(j.congregacao ?? "").replace(/"/g, '""')}",${date.toISOString()}`;
+    });
+    const csv = header + rows.join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, `jogral_filtrados_${new Date().toISOString()}.csv`);
+  };
+
+  // Contar inscrições por sexo (jogral)
+  const inscricoesPorSexoJog = ["Masculino", "Feminino"].map((s) => ({
+    sexo: s,
+    total: jogral.filter((j) => j.sexo === s).length,
+  }));
+
+  // Contar inscrições por área (jogral)
+  const inscricoesPorAreaJog = uniqueAreasJog.map((area) => ({
+    area,
+    total: jogral.filter((j) => j.area === area).length,
+  }));
+
   const handleLogin = () => {
     if (
       user === process.env.NEXT_PUBLIC_ADMIN_USER &&
@@ -459,6 +561,29 @@ export default function AdminDashboard() {
         📊 Dashboard de Inscrições
       </h1>
 
+      {/* Navegação em abas */}
+      <div className="flex flex-wrap gap-2 mb-8 border-b border-neutral-200">
+        {[
+          { key: "coral" as const, label: "🎶 Grande Coral" },
+          { key: "vestibular" as const, label: "📚 Vestibular" },
+          { key: "jogral" as const, label: "🎤 Jogral" },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-4 py-2 text-sm font-medium rounded-t-lg -mb-px border-b-2 transition-colors ${
+              activeTab === tab.key
+                ? "border-primary-600 text-primary-700 bg-white"
+                : "border-transparent text-neutral-500 hover:text-neutral-800"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === "coral" && (
+      <>
       <div className="flex flex-col md:flex-wrap md:flex-row md:items-center md:justify-start gap-4 mb-6">
         {/* Linha de busca e área/congregação */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
@@ -799,9 +924,11 @@ export default function AdminDashboard() {
           </BarChart>
         </ResponsiveContainer>
       </div>
+      </>
+      )}
 
-      {/* === Seção Vestibular === */}
-      <div className="bg-white p-6 rounded-2xl shadow mt-10">
+      {activeTab === "vestibular" && (
+      <div className="bg-white p-6 rounded-2xl shadow">
         <h2 className="text-xl font-bold mb-6">📚 Vestibular</h2>
 
         {/* Cards resumo */}
@@ -1005,6 +1132,212 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+      )}
+
+      {activeTab === "jogral" && (
+      <div className="bg-white p-6 rounded-2xl shadow">
+        <h2 className="text-xl font-bold mb-6">🎤 Jogral</h2>
+
+        {/* Cards resumo */}
+        <div className="grid gap-6 mb-6 w-full">
+          <div className="bg-neutral-50 p-4 rounded-xl text-center shadow w-full">
+            <h3 className="text-sm font-medium text-neutral-600">
+              Total inscritos
+            </h3>
+            <p className="text-2xl font-bold text-info">{jogral.length}</p>
+          </div>
+        </div>
+
+        {/* Filtros */}
+        <div className="flex flex-col md:flex-wrap md:flex-row md:items-center md:justify-start gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+            <Input
+              value={searchJog}
+              onChange={(e) => {
+                setSearchJog(e.target.value);
+                setPageJog(1);
+              }}
+              placeholder="🔎 Buscar por nome / código / cartão / whatsapp..."
+              className="w-full sm:w-80"
+            />
+            <Select
+              value={sexoJog}
+              onChange={(e) => {
+                setSexoJog(e.target.value);
+                setPageJog(1);
+              }}
+              className="w-full sm:w-48"
+            >
+              <option value="all">Todos os Sexos</option>
+              <option value="Masculino">Masculino</option>
+              <option value="Feminino">Feminino</option>
+            </Select>
+            <Select
+              value={areaJog}
+              onChange={(e) => {
+                setAreaJog(
+                  e.target.value === "all" ? "all" : Number(e.target.value)
+                );
+                setCongregJog("all");
+                setPageJog(1);
+              }}
+              className="w-full sm:w-48"
+            >
+              <option value="all">Todas as Áreas</option>
+              {uniqueAreasJog.map((a) => (
+                <option key={a} value={a}>
+                  Área {a}
+                </option>
+              ))}
+            </Select>
+            <Select
+              value={congregJog}
+              onChange={(e) => {
+                setCongregJog(e.target.value);
+                setPageJog(1);
+              }}
+              className="w-full sm:w-48"
+            >
+              <option value="all">Todas as Congregações</option>
+              {congregacoesForAreaJog.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="flex items-center justify-between w-full">
+            <div>
+              <Button variant="primary" size="sm" onClick={exportJogCSV}>
+                📥 Exportar filtrados
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label className="text-sm">Itens por página:</label>
+              <Select
+                value={pageSizeJog}
+                onChange={(e) => {
+                  setPageSizeJog(Number(e.target.value));
+                  setPageJog(1);
+                }}
+                className="w-auto"
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </Select>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabela */}
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell>Código</TableHeaderCell>
+              <TableHeaderCell>Nome</TableHeaderCell>
+              <TableHeaderCell>Sexo</TableHeaderCell>
+              <TableHeaderCell>Idade</TableHeaderCell>
+              <TableHeaderCell>Cartão de membro</TableHeaderCell>
+              <TableHeaderCell>WhatsApp</TableHeaderCell>
+              <TableHeaderCell>Área</TableHeaderCell>
+              <TableHeaderCell>Congregação</TableHeaderCell>
+              <TableHeaderCell>Data</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {paginatedJog.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={9} className="py-6 text-center text-neutral-500">
+                  Nenhuma inscrição do Jogral encontrada.
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedJog.map((j) => {
+                const date = j.createdAt?.toDate
+                  ? j.createdAt.toDate()
+                  : new Date(j.createdAt);
+                return (
+                  <TableRow key={j.id}>
+                    <TableCell>{j.codigo ?? "-"}</TableCell>
+                    <TableCell>{j.nome ?? "-"}</TableCell>
+                    <TableCell>{j.sexo ?? "-"}</TableCell>
+                    <TableCell>{j.idade ?? "-"}</TableCell>
+                    <TableCell>{j.cartaoMembro ?? "-"}</TableCell>
+                    <TableCell>{j.whatsapp ?? "-"}</TableCell>
+                    <TableCell>{j.area ?? "-"}</TableCell>
+                    <TableCell>{j.congregacao ?? "-"}</TableCell>
+                    <TableCell>{date ? date.toLocaleString() : "-"}</TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
+
+        {/* Paginação */}
+        <div className="flex items-center justify-between mt-4">
+          <div className="text-sm text-neutral-600">
+            Mostrando {paginatedJog.length} de {filteredJog.length} resultados
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setPageJog((p) => Math.max(1, p - 1))}
+              disabled={pageJog === 1}
+            >
+              {"<"}
+            </Button>
+            <span className="px-3 py-1 border rounded bg-white">
+              Página {pageJog} / {totalPagesJog}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setPageJog((p) => Math.min(totalPagesJog, p + 1))}
+              disabled={pageJog === totalPagesJog}
+            >
+              {">"}
+            </Button>
+          </div>
+        </div>
+
+        {/* Gráficos */}
+        <div className="grid w-full gap-6 mt-6">
+          <div className="bg-neutral-50 p-4 rounded-xl shadow-card">
+            <h3 className="text-sm font-medium text-neutral-600 mb-2">
+              Inscrições por Sexo
+            </h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={inscricoesPorSexoJog}>
+                <XAxis dataKey="sexo" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="total" fill="#8b5cf6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="bg-neutral-50 p-4 rounded-xl shadow-card">
+            <h3 className="text-sm font-medium text-neutral-600 mb-2">
+              Inscrições por Área
+            </h3>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={inscricoesPorAreaJog}>
+                <XAxis dataKey="area" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="total" fill="#3b82f6" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+      )}
     </div>
   );
 }

@@ -7,12 +7,14 @@ export function useInscricoesStatus() {
   const [status, setStatus] = useState({
     coralAtivo: false,
     vestibularAtivo: false,
+    jogralAtivo: false,
     loading: true,
   });
 
   useEffect(() => {
     const coralRef = doc(db, "abertas", "coral");
     const vestibularRef = doc(db, "abertas", "vestibular");
+    const jogralRef = doc(db, "abertas", "jogral");
 
     const unsubCoral = onSnapshot(coralRef, (docSnap) => {
       setStatus((prev) => ({
@@ -25,6 +27,13 @@ export function useInscricoesStatus() {
       setStatus((prev) => ({
         ...prev,
         vestibularAtivo: docSnap.exists() ? docSnap.data().ativo : false,
+      }));
+    });
+
+    const unsubJogral = onSnapshot(jogralRef, (docSnap) => {
+      setStatus((prev) => ({
+        ...prev,
+        jogralAtivo: docSnap.exists() ? docSnap.data().ativo : false,
         loading: false,
       }));
     });
@@ -32,6 +41,7 @@ export function useInscricoesStatus() {
     return () => {
       unsubCoral();
       unsubVestibular();
+      unsubJogral();
     };
   }, []);
 

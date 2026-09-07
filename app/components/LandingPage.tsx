@@ -9,10 +9,11 @@ import Location from "./Location";
 import Footer from "./Footer";
 import RegisterModal from "./RegisterModal";
 import RegisterVestibularModal from "./RegisterVestibularModal";
+import RegisterJogralModal from "./RegisterJogralModal";
 
 interface LandingPageProps {
   /** Abre um dos modais de inscrição automaticamente ao carregar a página. */
-  autoOpen?: "coral" | "vestibular";
+  autoOpen?: "coral" | "vestibular" | "jogral";
 }
 
 export default function LandingPage({ autoOpen }: LandingPageProps) {
@@ -20,11 +21,15 @@ export default function LandingPage({ autoOpen }: LandingPageProps) {
   const [vestibularModalOpen, setVestibularModalOpen] = useState(
     autoOpen === "vestibular"
   );
+  const [jogralModalOpen, setJogralModalOpen] = useState(
+    autoOpen === "jogral"
+  );
 
   // Garante a abertura mesmo se o componente já estiver montado (ex: navegação client-side)
   useEffect(() => {
     if (autoOpen === "coral") setModalOpen(true);
     if (autoOpen === "vestibular") setVestibularModalOpen(true);
+    if (autoOpen === "jogral") setJogralModalOpen(true);
   }, [autoOpen]);
 
   return (
@@ -33,6 +38,7 @@ export default function LandingPage({ autoOpen }: LandingPageProps) {
       <Hero
         onOpenModal={() => setModalOpen(true)}
         onOpenVestibularModal={() => setVestibularModalOpen(true)}
+        onOpenJogralModal={() => setJogralModalOpen(true)}
       />
       <Countdown />
       <About />
@@ -47,6 +53,12 @@ export default function LandingPage({ autoOpen }: LandingPageProps) {
       <RegisterVestibularModal
         isOpen={vestibularModalOpen}
         onClose={() => setVestibularModalOpen(false)}
+      />
+
+      {/* Modal de Inscrição no Jogral */}
+      <RegisterJogralModal
+        isOpen={jogralModalOpen}
+        onClose={() => setJogralModalOpen(false)}
       />
     </div>
   );
