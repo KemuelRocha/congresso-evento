@@ -40,7 +40,7 @@ export default function RegisterVestibularModal({
 
   const congregacoes = area ? areas[area]?.congregacoes || [] : [];
 
-  const dataLimite = new Date("2026-09-12T23:59:59");
+  const dataLimite = new Date("2026-09-20T23:59:59");
   const hoje = new Date();
   const inscricoesEncerradas = hoje > dataLimite;
 
@@ -131,7 +131,7 @@ export default function RegisterVestibularModal({
         <div className="text-center p-6">
           <p className="text-lg font-semibold text-error">
             As inscrições para o Vestibular Bíblico foram encerradas em{" "}
-            <strong>12/09/2026</strong>.
+            <strong>20/09/2026</strong>.
           </p>
         </div>
       </Modal>
