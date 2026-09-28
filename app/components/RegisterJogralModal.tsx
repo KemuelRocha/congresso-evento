@@ -8,6 +8,7 @@ import { Select } from "./ui/Select";
 import { Checkbox } from "./ui/Checkbox";
 import { Button } from "./ui/Button";
 import { salvarJogral } from "../services/salvarJogral";
+import { useInscricoesStatus } from "../hooks/useInscricoesStatus";
 
 const WHATSAPP_GRUPO_JOGRAL_URL =
   "https://chat.whatsapp.com/Er7uWBKtTnA20vGjBR5soH?s=cl&p=i&mlu=0&ilr=4";
@@ -32,6 +33,7 @@ export default function RegisterJogralModal({
 
   const [confirmado, setConfirmado] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { jogralAtivo, loading: carregandoStatus } = useInscricoesStatus();
 
   const congregacoes = area ? areas[area]?.congregacoes || [] : [];
 
@@ -49,6 +51,7 @@ export default function RegisterJogralModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (loading) return; // evita clique duplo
+    if (carregandoStatus || !jogralAtivo) return;
     if (!isValidForm || !cienteGrupo) {
       alert("Preencha todos os campos corretamente.");
       return;
@@ -136,6 +139,24 @@ export default function RegisterJogralModal({
             Fechar
           </Button>
         </div>
+      </Modal>
+    );
+  }
+
+  if (carregandoStatus) {
+    return (
+      <Modal isOpen={isOpen} onClose={onClose} title="Inscrição - Jogral">
+        <p className="text-center p-6">Verificando inscrições...</p>
+      </Modal>
+    );
+  }
+
+  if (!jogralAtivo) {
+    return (
+      <Modal isOpen={isOpen} onClose={onClose} title="Inscrições Encerradas">
+        <p className="text-center p-6 text-lg font-semibold text-error">
+          As inscrições para o Jogral estão encerradas.
+        </p>
       </Modal>
     );
   }

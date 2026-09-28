@@ -14,6 +14,7 @@ export async function salvarJogral(dados: any) {
   try {
     const jogralRef = collection(db, "jogral");
     const counterRef = doc(db, "counters", "jogral");
+    const statusRef = doc(db, "abertas", "jogral");
 
     // 🔎 Verifica se já existe inscrição com o mesmo número de cartão
     const q = query(
@@ -33,6 +34,11 @@ export async function salvarJogral(dados: any) {
 
     // 🔄 Continua o processo normal com transação para gerar código único
     const codigo = await runTransaction(db, async (transaction) => {
+      const statusDoc = await transaction.get(statusRef);
+      if (!statusDoc.exists() || statusDoc.data().ativo !== true) {
+        return null;
+      }
+
       const counterDoc = await transaction.get(counterRef);
       let lastCodigo = 0;
 
@@ -57,6 +63,10 @@ export async function salvarJogral(dados: any) {
 
       return codigo;
     });
+
+    if (!codigo) {
+      return { success: false, error: "As inscrições para o Jogral estão encerradas." };
+    }
 
     return { success: true, codigo };
   } catch (err) {

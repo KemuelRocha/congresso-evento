@@ -30,13 +30,19 @@ export function useInscricoesStatus() {
       }));
     });
 
-    const unsubJogral = onSnapshot(jogralRef, (docSnap) => {
-      setStatus((prev) => ({
-        ...prev,
-        jogralAtivo: docSnap.exists() ? docSnap.data().ativo : false,
-        loading: false,
-      }));
-    });
+    const unsubJogral = onSnapshot(
+      jogralRef,
+      (docSnap) => {
+        setStatus((prev) => ({
+          ...prev,
+          jogralAtivo: docSnap.exists() ? docSnap.data().ativo === true : false,
+          loading: false,
+        }));
+      },
+      () => {
+        setStatus((prev) => ({ ...prev, jogralAtivo: false, loading: false }));
+      }
+    );
 
     return () => {
       unsubCoral();
