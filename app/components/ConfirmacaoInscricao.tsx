@@ -6,7 +6,7 @@ import { Button } from "./ui/Button";
 import { useRef } from "react";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Download } from "lucide-react";
 
 export function ConfirmacaoInscricao({
   codigo,
@@ -45,10 +45,10 @@ export function ConfirmacaoInscricao({
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose} title="✅ Inscrição Confirmada">
+    <Modal isOpen={true} onClose={onClose} title="Inscrição confirmada">
       {/* Fora do pdfRef: o aviso não vai para o PDF do comprovante */}
       {possivelDuplicada && (
-        <div className="mb-4 flex gap-3 rounded-lg border border-accent-300 bg-accent-50 p-4 text-left">
+        <div className="mb-4 flex gap-3 rounded-2xl border border-accent-200 bg-accent-50 p-4 text-left">
           <AlertTriangle
             className="mt-0.5 h-5 w-5 shrink-0 text-accent-600"
             aria-hidden
@@ -64,43 +64,50 @@ export function ConfirmacaoInscricao({
         </div>
       )}
 
-      <div
-        ref={pdfRef}
-        className="text-center space-y-5 p-4 bg-white rounded-lg"
-      >
-        <h2 className="font-display text-2xl font-bold text-primary-700">
-          Inscrição Realizada!
-        </h2>
-        <p className="text-neutral-700">
-          Obrigado por se inscrever, sua participação está garantida.
-        </p>
-
-        <div className="bg-neutral-100 p-4 rounded-lg shadow-sm">
-          <p className="text-lg">Seu código de inscrição:</p>
-          <p className="font-bold text-2xl text-primary-600 tracking-wider">
-            {codigo}
-          </p>
+      <div ref={pdfRef} className="space-y-5 rounded-2xl bg-white p-4 text-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-success/10">
+            <CheckCircle2 className="h-8 w-8 text-success" aria-hidden />
+          </div>
+          <div>
+            <h2 className="font-display text-2xl font-bold text-secondary-900">
+              Inscrição realizada!
+            </h2>
+            <p className="mt-1 text-neutral-600">
+              Obrigado por se inscrever, sua participação está garantida.
+            </p>
+          </div>
         </div>
 
-        <div className="flex justify-center">
-          <div className="p-3 border rounded-lg shadow-card bg-white">
-            <QRCode value={codigo} size={180} />
+        <div className="rounded-2xl border-2 border-dashed border-primary-200 bg-primary-50/60 p-5">
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary-700">
+            Seu código de inscrição
+          </p>
+          <p className="mt-1 font-display text-3xl font-bold tracking-wider text-primary-700">
+            {codigo}
+          </p>
+
+          <div className="mt-4 flex justify-center">
+            <div className="rounded-xl bg-white p-3 shadow-card">
+              <QRCode value={codigo} size={168} />
+            </div>
           </div>
         </div>
 
         <p className="text-sm text-neutral-500">
-          Guarde este código ou apresente o QRCode{" "}
+          Guarde este código ou apresente o QR Code{" "}
           {isVestibular
             ? "no dia da prova para confirmar sua inscrição."
             : "nos ensaios para confirmar sua presença."}
         </p>
       </div>
 
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <Button variant="primary" size="sm" onClick={handleDownloadPDF}>
-          📄 Baixar PDF
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <Button variant="primary" size="md" onClick={handleDownloadPDF}>
+          <Download className="h-5 w-5" aria-hidden />
+          Baixar comprovante
         </Button>
-        <Button variant="secondary" size="sm" onClick={onClose}>
+        <Button variant="ghost" size="md" onClick={onClose}>
           Fechar
         </Button>
       </div>

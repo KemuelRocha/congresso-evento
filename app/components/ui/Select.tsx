@@ -1,36 +1,43 @@
 "use client";
 
-import React from "react";
+import React, { useId } from "react";
+import { ChevronDown } from "lucide-react";
+import { fieldClasses, FieldLabel, FieldMessage } from "./Input";
 
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
+  hint?: string;
 }
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, className = "", id, children, ...rest }, ref) => {
+  ({ label, error, hint, className = "", id, children, ...rest }, ref) => {
+    const autoId = useId();
+    const selectId = id ?? autoId;
+
     return (
       <div>
-        {label && (
-          <label htmlFor={id} className="block font-medium mb-1">
-            {label}
-          </label>
-        )}
-        <select
-          ref={ref}
-          id={id}
-          className={[
-            "w-full rounded-md border p-2 transition-colors bg-white text-neutral-900",
-            "border-neutral-400",
-            "focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500",
-            error ? "border-error focus:ring-error focus:border-error" : "",
-            className,
-          ].join(" ")}
-          {...rest}
-        >
-          {children}
-        </select>
-        {error && <p className="text-error text-sm mt-1">{error}</p>}
+        {label && <FieldLabel htmlFor={selectId}>{label}</FieldLabel>}
+        <div className="relative">
+          <select
+            ref={ref}
+            id={selectId}
+            aria-invalid={!!error}
+            className={[
+              fieldClasses(error),
+              "appearance-none pr-10 cursor-pointer",
+              className,
+            ].join(" ")}
+            {...rest}
+          >
+            {children}
+          </select>
+          <ChevronDown
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500"
+            aria-hidden
+          />
+        </div>
+        <FieldMessage error={error} hint={hint} />
       </div>
     );
   }
