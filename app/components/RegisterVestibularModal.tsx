@@ -130,8 +130,7 @@ export default function RegisterVestibularModal({
       <Modal isOpen={isOpen} onClose={onClose} title="Inscrições Encerradas">
         <div className="text-center p-6">
           <p className="text-lg font-semibold text-error">
-            As inscrições para o Vestibular Bíblico foram encerradas em{" "}
-            <strong>31/10/2026</strong>.
+            As inscrições para o Vestibular Bíblico estão encerradas.
           </p>
         </div>
       </Modal>

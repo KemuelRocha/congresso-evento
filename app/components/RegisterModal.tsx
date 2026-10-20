@@ -8,6 +8,7 @@ import { Select } from "./ui/Select";
 import { Button } from "./ui/Button";
 import { salvarInscricao } from "../services/salvarInscricao";
 import { ConfirmacaoInscricao } from "./ConfirmacaoInscricao";
+import { useInscricoesStatus } from "../hooks/useInscricoesStatus";
 
 export default function RegisterModal({
   isOpen,
@@ -31,9 +32,8 @@ export default function RegisterModal({
 
   const congregacoes = area ? areas[area]?.congregacoes || [] : [];
 
-  const dataLimite = new Date("2026-10-31T23:59:59");
-  const hoje = new Date();
-  const inscricoesEncerradas = false;
+  const { coralAtivo, loading: carregandoStatus } = useInscricoesStatus();
+  const inscricoesEncerradas = !carregandoStatus && !coralAtivo;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,8 +105,7 @@ export default function RegisterModal({
       <Modal isOpen={isOpen} onClose={onClose} title="Inscrições Encerradas">
         <div className="text-center p-6">
           <p className="text-lg font-semibold text-error">
-            As inscrições para o Congresso de Jovens 2026 foram encerradas em{" "}
-            <strong>31/10/2026</strong>.
+            As inscrições para o Grande Coral estão encerradas.
           </p>
         </div>
       </Modal>
