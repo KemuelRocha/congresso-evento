@@ -15,10 +15,9 @@ export async function salvarInscricao(dados: any) {
     const inscricoesRef = collection(db, "inscricoes");
     const counterRef = doc(db, "counters", "inscricoes");
 
-    // Normaliza o cartão (sem espaços/símbolos, maiúsculo, sem zeros à esquerda)
+    // Normaliza o cartão (só dígitos, sem zeros à esquerda)
     const cartao = String(dados.cartaoMembro ?? "")
-      .replace(/[^a-zA-Z0-9]/g, "")
-      .toUpperCase()
+      .replace(/\D/g, "")
       .replace(/^0+(?=.)/, "");
 
     if (!cartao) {

@@ -273,7 +273,7 @@ export default function RegisterModal({
               required
               inputMode="numeric"
               value={cartaoMembro}
-              onChange={(e) => setCartaoMembro(e.target.value)}
+              onChange={(e) => setCartaoMembro(e.target.value.replace(/\D/g, ""))} // só números
               placeholder="Número do cartão"
             />
           </div>
