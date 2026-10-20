@@ -15,24 +15,37 @@ export async function salvarInscricao(dados: any) {
     const inscricoesRef = collection(db, "inscricoes");
     const counterRef = doc(db, "counters", "inscricoes");
 
-    // 🔎 Verifica se já existe inscrição com o mesmo número de cartão
-    const q = query(
-      inscricoesRef,
-      where("cartaoMembro", "==", dados.cartaoMembro),
-      limit(1)
-    );
-    const existing = await getDocs(q);
+    // Normaliza o cartão (sem espaços/símbolos, maiúsculo, sem zeros à esquerda)
+    const cartao = String(dados.cartaoMembro ?? "")
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .toUpperCase()
+      .replace(/^0+(?=.)/, "");
 
-    if (!existing.empty) {
-      return {
-        success: false,
-        error: "Número de cartão de membro já informado em outra inscrição",
-      };
+    if (!cartao) {
+      return { success: false, error: "Informe o número do cartão de membro" };
     }
 
-    // 🔄 Continua o processo normal com transação para gerar código único
+    // ⚠️ Aviso (não bloqueia) se o WhatsApp já foi usado em outra inscrição
+    const whatsappQ = query(
+      inscricoesRef,
+      where("whatsapp", "==", dados.whatsapp),
+      limit(1)
+    );
+    const whatsappExistente = !(await getDocs(whatsappQ)).empty;
+
+    // 🔄 O cartão é o ID do documento: a transação impede duplicatas mesmo com envios simultâneos
+    const newDoc = doc(inscricoesRef, cartao);
+
     const codigo = await runTransaction(db, async (transaction) => {
-      const counterDoc = await transaction.get(counterRef);
+      const [counterDoc, existing] = await Promise.all([
+        transaction.get(counterRef),
+        transaction.get(newDoc),
+      ]);
+
+      if (existing.exists()) {
+        throw new Error("CARTAO_DUPLICADO");
+      }
+
       let lastCodigo = 0;
 
       if (!counterDoc.exists()) {
@@ -47,9 +60,9 @@ export async function salvarInscricao(dados: any) {
       const codigo = `CJ2026-${String(lastCodigo).padStart(4, "0")}`;
 
       // Cria inscrição
-      const newDoc = doc(inscricoesRef);
       transaction.set(newDoc, {
         ...dados,
+        cartaoMembro: cartao,
         codigo,
         createdAt: serverTimestamp(),
       });
@@ -57,8 +70,14 @@ export async function salvarInscricao(dados: any) {
       return codigo;
     });
 
-    return { success: true, codigo };
+    return { success: true, codigo, whatsappExistente };
   } catch (err) {
+    if (err instanceof Error && err.message === "CARTAO_DUPLICADO") {
+      return {
+        success: false,
+        error: "Número de cartão de membro já informado em outra inscrição",
+      };
+    }
     console.error("Erro ao salvar inscrição:", err);
     return { success: false, error: "Erro inesperado ao salvar." };
   }

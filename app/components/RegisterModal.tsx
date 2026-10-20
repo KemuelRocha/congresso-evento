@@ -59,10 +59,16 @@ export default function RegisterModal({
         cartaoMembro,
       };
 
-      const { success, codigo, error } = await salvarInscricao(formData);
+      const { success, codigo, error, whatsappExistente } =
+        await salvarInscricao(formData);
 
       if (success && codigo) {
         setConfirmation(codigo);
+        if (whatsappExistente) {
+          alert(
+            "Atenção: este WhatsApp já foi usado em outra inscrição. Se for engano, procure a organização."
+          );
+        }
         // resetar form
         setNome("");
         setSexo("");
@@ -86,6 +92,7 @@ export default function RegisterModal({
     if (idade === null || idade < 14) return false;
     if (!lideranca) return false; // já tem valor padrão, então sempre true
     if (!whatsapp.trim()) return false;
+    if (!cartaoMembro.trim()) return false;
     if (area === null) return false;
     if (!congregacao) return false;
 
@@ -218,6 +225,7 @@ export default function RegisterModal({
         <Input
           label="Número do Cartão de Membro"
           type="text"
+          required
           value={cartaoMembro}
           onChange={(e) => setCartaoMembro(e.target.value)}
           placeholder="Digite seu número de cartão de membro"
