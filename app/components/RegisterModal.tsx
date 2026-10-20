@@ -286,6 +286,7 @@ export default function RegisterModal({
             label="WhatsApp"
             error={erro("whatsapp")}
             type="tel"
+            inputMode="numeric"
             required
             autoComplete="tel"
             value={whatsapp}
