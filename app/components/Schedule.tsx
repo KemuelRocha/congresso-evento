@@ -6,19 +6,19 @@ const Schedule: FunctionComponent = () => {
   const program = [
     {
       day: "Primeiro Dia",
-      date: "27.11",
+      date: "04.12",
       title: "Abertura",
       activity: "Processional de Abertura",
     },
     {
       day: "Segundo Dia",
-      date: "28.11",
+      date: "05.12",
       title: "Noite Missionária",
       activity: "Processional de Missões",
     },
     {
       day: "Terceiro Dia",
-      date: "29.11",
+      date: "06.12",
       title: "Encerramento",
       activity: "Jogral",
     },

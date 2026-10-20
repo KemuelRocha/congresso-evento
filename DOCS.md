@@ -19,7 +19,7 @@ Página inicial do site: Header, Hero, contagem regressiva para o evento, seçã
 
 ### 2. Inscrição — Grande Coral
 
-Modal aberto a partir do Header/Hero (`RegisterModal.tsx`). Formulário com área, congregação, nome, sexo, se é jovem ou liderança, data de nascimento (idade mínima 14 anos até 29/11/2026), número do cartão de membro e WhatsApp. A partir de 2026 o fardamento é exclusivamente a camisa oficial, então o formulário não exibe mais fotos/consentimento de fardamento adicional.
+Modal aberto a partir do Header/Hero (`RegisterModal.tsx`). Formulário com área, congregação, nome, sexo, se é jovem ou liderança, data de nascimento (idade mínima 14 anos até 04/12/2026), número do cartão de membro e WhatsApp. A partir de 2026 o fardamento é exclusivamente a camisa oficial, então o formulário não exibe mais fotos/consentimento de fardamento adicional.
 
 - **Acesso**: público, condicionado a `abertas/coral.ativo == true`.
 - **Grava em**: coleção `inscricoes` (campos: `nome`, `nomeLower`, `sexo`, `idade`, `lideranca`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `codigo`, `createdAt`).
@@ -30,13 +30,13 @@ Modal aberto a partir do Header/Hero (`RegisterModal.tsx`). Formulário com áre
 
 Modal em 3 etapas (`RegisterVestibularModal.tsx`): formulário → pagamento via PIX (com upload obrigatório do comprovante) → confirmação.
 
-- **Acesso**: público, condicionado a `abertas/vestibular.ativo == true` **e** a uma data-limite fixa no código (`2026-09-12T23:59:59`).
+- **Acesso**: público, condicionado a `abertas/vestibular.ativo == true` **e** a uma data-limite fixa no código (`2026-10-31T23:59:59`).
 - **Link direto — `/vestibular`**: rota dedicada que carrega a landing normalmente e já abre o modal de inscrição do Vestibular automaticamente (via `LandingPage` com `autoOpen="vestibular"`, em [app/vestibular/page.tsx](app/vestibular/page.tsx)). Útil para divulgar um link específico quando só o Vestibular está com inscrições abertas (o Grande Coral tem o mesmo mecanismo disponível, bastando usar `autoOpen="coral"` numa rota equivalente caso necessário no futuro).
 - **Grava em**: coleção `vestibular` (campos: `nome`, `idade`, `dataNascimento`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `comprovante` [URL Cloudinary], `codigo`, `createdAt`).
 - **Código gerado**: sequencial `VB2026-0001`... via `counters/vestibular` ([app/services/salvarVestibular.ts](app/services/salvarVestibular.ts)).
 - **Upload de comprovante**: `POST /api/upload`, envia o arquivo para o Cloudinary (pasta `comprovantes`).
 - **Regra de negócio**: idade mínima 17 anos; não permite duas inscrições com o mesmo `cartaoMembro`.
-- ⚠️ **Nota**: o link `/vestibular` abre o formulário independente da flag `abertas/vestibular` — ele só é bloqueado pela data-limite (`12/09/2026`) já embutida no componente. Se as inscrições forem encerradas manualmente antes dessa data (desligando a flag), o link direto ainda abriria o formulário; considere isso ao divulgar o link.
+- ⚠️ **Nota**: o link `/vestibular` abre o formulário independente da flag `abertas/vestibular` — ele só é bloqueado pela data-limite (`31/10/2026`) já embutida no componente. Se as inscrições forem encerradas manualmente antes dessa data (desligando a flag), o link direto ainda abriria o formulário; considere isso ao divulgar o link.
 
 ### 4. Confirmação de Inscrição
 

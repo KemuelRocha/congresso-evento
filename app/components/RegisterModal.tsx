@@ -31,7 +31,7 @@ export default function RegisterModal({
 
   const congregacoes = area ? areas[area]?.congregacoes || [] : [];
 
-  const dataLimite = new Date("2026-09-30T23:59:59");
+  const dataLimite = new Date("2026-10-31T23:59:59");
   const hoje = new Date();
   const inscricoesEncerradas = false;
 
@@ -99,7 +99,7 @@ export default function RegisterModal({
         <div className="text-center p-6">
           <p className="text-lg font-semibold text-error">
             As inscrições para o Congresso de Jovens 2026 foram encerradas em{" "}
-            <strong>20/09/2026</strong>.
+            <strong>31/10/2026</strong>.
           </p>
         </div>
       </Modal>
@@ -193,7 +193,7 @@ export default function RegisterModal({
             required
             onChange={(e) => {
               const birthDate = new Date(e.target.value);
-              const eventDate = new Date("2026-11-29"); // data do congresso
+              const eventDate = new Date("2026-12-04"); // data do congresso
 
               let age = eventDate.getFullYear() - birthDate.getFullYear();
               const m = eventDate.getMonth() - birthDate.getMonth();
@@ -209,7 +209,7 @@ export default function RegisterModal({
           />
           {idade !== null && idade < 14 && (
             <p className="text-error text-sm">
-              Idade mínima: 14 anos até o dia 29/11/2026
+              Idade mínima: 14 anos até o dia 04/12/2026
             </p>
           )}
         </div>

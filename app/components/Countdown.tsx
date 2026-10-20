@@ -13,7 +13,7 @@ const Countdown: FunctionComponent = () => {
   const [mounted, setMounted] = useState(false);
 
   // Data do início do congresso
-  const eventDate = new Date("2026-11-27T18:00:00");
+  const eventDate = new Date("2026-12-04T18:00:00");
 
   useEffect(() => {
     const timer = setInterval(() => {

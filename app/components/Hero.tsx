@@ -29,7 +29,7 @@ const Hero: FunctionComponent<HeroProps> = ({
 
       <div className="relative z-10 container mx-auto px-6 flex flex-col items-center justify-center">
         <span className="animate-fadeInUp inline-flex items-center gap-2 rounded-full border border-accent-400/40 bg-white/10 backdrop-blur-sm px-4 py-1.5 text-xs md:text-sm font-semibold tracking-widest text-accent-300 uppercase mb-6">
-          27 a 29 de novembro · Petrolina-PE
+          04, 05 e 06 de dezembro · Petrolina-PE
         </span>
 
         <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold text-white mb-4 animate-fadeInUp delay-100 tracking-tight">
