@@ -214,7 +214,6 @@ export default function RegisterModal({
             autoComplete="name"
             value={nome}
             onChange={(e) => setNome(e.target.value)}
-            placeholder="Como está no cartão de membro"
           />
 
           <div className="grid gap-4 sm:grid-cols-2">
