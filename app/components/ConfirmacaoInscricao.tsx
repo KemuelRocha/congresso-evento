@@ -6,15 +6,18 @@ import { Button } from "./ui/Button";
 import { useRef } from "react";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
+import { AlertTriangle } from "lucide-react";
 
 export function ConfirmacaoInscricao({
   codigo,
   onClose,
   isVestibular = false,
+  possivelDuplicada = false,
 }: {
   codigo: string;
   onClose: () => void;
   isVestibular?: boolean;
+  possivelDuplicada?: boolean;
 }) {
   const pdfRef = useRef<HTMLDivElement>(null);
 
@@ -43,6 +46,24 @@ export function ConfirmacaoInscricao({
 
   return (
     <Modal isOpen={true} onClose={onClose} title="✅ Inscrição Confirmada">
+      {/* Fora do pdfRef: o aviso não vai para o PDF do comprovante */}
+      {possivelDuplicada && (
+        <div className="mb-4 flex gap-3 rounded-lg border border-accent-300 bg-accent-50 p-4 text-left">
+          <AlertTriangle
+            className="mt-0.5 h-5 w-5 shrink-0 text-accent-600"
+            aria-hidden
+          />
+          <div className="text-sm text-accent-900">
+            <p className="font-semibold">Encontramos uma inscrição parecida</p>
+            <p className="mt-1">
+              Já existe uma inscrição com este nome e/ou WhatsApp. Se você já
+              tinha se inscrito antes, procure a organização para que a
+              inscrição repetida seja removida.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div
         ref={pdfRef}
         className="text-center space-y-5 p-4 bg-white rounded-lg"

@@ -27,6 +27,7 @@ export default function RegisterModal({
   const [cartaoMembro, setCartaoMembro] = useState("");
 
   const [confirmation, setConfirmation] = useState<string | null>(null);
+  const [possivelDuplicada, setPossivelDuplicada] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -59,16 +60,12 @@ export default function RegisterModal({
         cartaoMembro,
       };
 
-      const { success, codigo, error, possivelDuplicada } =
+      const { success, codigo, error, possivelDuplicada: duplicada } =
         await salvarInscricao(formData);
 
       if (success && codigo) {
         setConfirmation(codigo);
-        if (possivelDuplicada) {
-          alert(
-            "Atenção: já existe inscrição com este nome e/ou WhatsApp. Se for duplicada, procure a organização."
-          );
-        }
+        setPossivelDuplicada(!!duplicada);
         // resetar form
         setNome("");
         setSexo("");
@@ -115,8 +112,10 @@ export default function RegisterModal({
   return confirmation ? (
     <ConfirmacaoInscricao
       codigo={confirmation}
+      possivelDuplicada={possivelDuplicada}
       onClose={() => {
         setConfirmation(null);
+        setPossivelDuplicada(false);
         onClose();
       }}
     />
