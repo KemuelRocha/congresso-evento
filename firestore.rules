@@ -1,0 +1,51 @@
+rules_version = '2';
+
+// Regras mínimas enquanto o site não usa Firebase Auth.
+// Leitura continua pública (o painel /adm e a /presenca leem direto do navegador),
+// mas ninguém consegue apagar inscrições, sobrescrever dados ou mexer nas flags.
+// Publicar colando no Firebase Console > Firestore Database > Regras.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Grande Coral: o ID do documento é o cartão de membro normalizado
+    match /inscricoes/{cartao} {
+      allow read: if true;
+      allow create: if request.resource.data.cartaoMembro == cartao;
+      // Só a /presenca altera, e apenas o mapa de presenças
+      allow update: if request.resource.data.diff(resource.data)
+        .affectedKeys().hasOnly(['presencas']);
+      allow delete: if false;
+    }
+
+    match /vestibular/{id} {
+      allow read, create: if true;
+      allow update, delete: if false;
+    }
+
+    match /jogral/{id} {
+      allow read, create: if true;
+      allow update, delete: if false;
+    }
+
+    // Contadores de código sequencial: só podem avançar de 1 em 1
+    match /counters/{nome} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['lastCodigo'])
+        && request.resource.data.lastCodigo == 1;
+      allow update: if request.resource.data.keys().hasOnly(['lastCodigo'])
+        && request.resource.data.lastCodigo == resource.data.lastCodigo + 1;
+      allow delete: if false;
+    }
+
+    // Flags de abertura e total de vagas: alterados só pelo Console
+    match /abertas/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /vagas/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

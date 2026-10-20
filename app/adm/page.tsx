@@ -50,6 +50,7 @@ interface Inscricao {
   whatsapp: string;
   fardamentoCiente?: boolean; // não coletado a partir de 2026 (fardamento passou a ser só a camisa oficial)
   cartaoMembro: string;
+  possiveisDuplicadas?: string[]; // códigos de inscrições com mesmo nome/WhatsApp
   createdAt?: any; // Timestamp do Firestore
 }
 
@@ -74,6 +75,7 @@ export default function AdminDashboard() {
   const [congregFilter, setCongregFilter] = useState<string | "all">("all");
   const [sexoFilter, setSexoFilter] = useState<string | "all">("all");
   const [liderFilter, setLiderFilter] = useState<string | "all">("all");
+  const [dupFilter, setDupFilter] = useState<"all" | "dup">("all");
   // filtros de data
   const [dateStart, setDateStart] = useState<string>("");
   const [dateEnd, setDateEnd] = useState<string>("");
@@ -297,6 +299,24 @@ export default function AdminDashboard() {
     return `${d}/${m}/${y}`;
   };
 
+  // possíveis duplicadas nos dois sentidos: a inscrição nova aponta para a antiga,
+  // e a antiga também passa a ser marcada
+  const duplicadasPorCodigo = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    const ligar = (a: string, b: string) => {
+      if (!map.has(a)) map.set(a, new Set());
+      map.get(a)!.add(b);
+    };
+    inscricoes.forEach((i) => {
+      if (!i.codigo) return;
+      i.possiveisDuplicadas?.forEach((outro) => {
+        ligar(i.codigo!, outro);
+        ligar(outro, i.codigo!);
+      });
+    });
+    return map;
+  }, [inscricoes]);
+
   // filtro principal
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
@@ -323,6 +343,8 @@ export default function AdminDashboard() {
         (i.lideranca ?? "").toLowerCase() !== liderFilter.toLowerCase()
       )
         return false;
+      if (dupFilter === "dup" && !(i.codigo && duplicadasPorCodigo.has(i.codigo)))
+        return false;
 
       // filtro por data
       const created = toDate(i.createdAt);
@@ -348,6 +370,8 @@ export default function AdminDashboard() {
     congregFilter,
     sexoFilter,
     liderFilter,
+    dupFilter,
+    duplicadasPorCodigo,
     dateStart,
     dateEnd,
   ]);
@@ -660,6 +684,18 @@ export default function AdminDashboard() {
             <option value="jovem">Jovens</option>
             <option value="lider">Lideranças</option>
           </Select>
+
+          <Select
+            value={dupFilter}
+            onChange={(e) => {
+              setDupFilter(e.target.value as "all" | "dup");
+              setPage(1);
+            }}
+            className="w-full sm:w-48"
+          >
+            <option value="all">Todas as inscrições</option>
+            <option value="dup">Possíveis duplicadas</option>
+          </Select>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
@@ -737,9 +773,19 @@ export default function AdminDashboard() {
           ) : (
             paginated.map((i) => {
               const date = toDate(i.createdAt);
+              const duplicadas = i.codigo
+                ? duplicadasPorCodigo.get(i.codigo)
+                : undefined;
               return (
                 <TableRow key={i.id}>
-                  <TableCell>{i.codigo ?? "-"}</TableCell>
+                  <TableCell>
+                    {i.codigo ?? "-"}
+                    {duplicadas && (
+                      <span className="block text-xs font-semibold text-error">
+                        Possível duplicada: {Array.from(duplicadas).join(", ")}
+                      </span>
+                    )}
+                  </TableCell>
                   <TableCell>{i.nome}</TableCell>
                   <TableCell>{i.cartaoMembro ?? "-"}</TableCell>
                   <TableCell>{i.whatsapp ?? "-"}</TableCell>

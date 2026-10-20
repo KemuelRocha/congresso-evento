@@ -59,14 +59,14 @@ export default function RegisterModal({
         cartaoMembro,
       };
 
-      const { success, codigo, error, whatsappExistente } =
+      const { success, codigo, error, possivelDuplicada } =
         await salvarInscricao(formData);
 
       if (success && codigo) {
         setConfirmation(codigo);
-        if (whatsappExistente) {
+        if (possivelDuplicada) {
           alert(
-            "Atenção: este WhatsApp já foi usado em outra inscrição. Se for engano, procure a organização."
+            "Atenção: já existe inscrição com este nome e/ou WhatsApp. Se for duplicada, procure a organização."
           );
         }
         // resetar form

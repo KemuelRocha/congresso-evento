@@ -22,7 +22,8 @@ Página inicial do site: Header, Hero, contagem regressiva para o evento, seçã
 Modal aberto a partir do Header/Hero (`RegisterModal.tsx`). Formulário com área, congregação, nome, sexo, se é jovem ou liderança, data de nascimento (idade mínima 14 anos até 04/12/2026), número do cartão de membro e WhatsApp. A partir de 2026 o fardamento é exclusivamente a camisa oficial, então o formulário não exibe mais fotos/consentimento de fardamento adicional.
 
 - **Acesso**: público, condicionado a `abertas/coral.ativo == true`.
-- **Grava em**: coleção `inscricoes` (campos: `nome`, `nomeLower`, `sexo`, `idade`, `lideranca`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `codigo`, `createdAt`).
+- **Grava em**: coleção `inscricoes` (campos: `nome`, `nomeLower`, `sexo`, `idade`, `lideranca`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `nomeNormalizado`, `possiveisDuplicadas`, `codigo`, `createdAt`).
+- **Duplicidade**: o cartão de membro é obrigatório, normalizado (sem espaços/símbolos, maiúsculo, sem zeros à esquerda) e usado como ID do documento — a transação recusa um segundo envio com o mesmo cartão, mesmo simultâneo. Nome (sem acentos/espaços extras, em `nomeNormalizado`) e WhatsApp repetidos **não bloqueiam**: a inscrição é aceita, o inscrito vê um alerta e os códigos das inscrições parecidas ficam em `possiveisDuplicadas`, exibidos no `/adm` como "Possível duplicada".
 - **Código gerado**: sequencial `CJ2026-0001`, `CJ2026-0002`... via transação Firestore contra `counters/inscricoes` ([app/services/salvarInscricao.ts](app/services/salvarInscricao.ts)).
 - **Regra de negócio**: não permite duas inscrições com o mesmo `cartaoMembro`.
 
@@ -76,7 +77,7 @@ Tela standalone (não usa o Header/Footer do site) para marcar presença dos ins
 
 | Coleção / Documento | Descrição |
 |---|---|
-| `inscricoes` | Inscrições do Grande Coral. Campos principais: `nome`, `nomeLower`, `sexo`, `idade`, `lideranca`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `codigo`, `createdAt`, `presencas.<data>` (mapa de booleanos por dia). |
+| `inscricoes` | Inscrições do Grande Coral. Campos principais: `nome`, `nomeLower`, `sexo`, `idade`, `lideranca`, `whatsapp`, `area`, `congregacao`, `cartaoMembro` (também é o ID do documento), `nomeNormalizado`, `possiveisDuplicadas`, `codigo`, `createdAt`, `presencas.<data>` (mapa de booleanos por dia). |
 | `vestibular` | Inscrições do Vestibular Bíblico. Campos: `nome`, `idade`, `dataNascimento`, `whatsapp`, `area`, `congregacao`, `cartaoMembro`, `comprovante`, `codigo`, `createdAt`. |
 | `counters/inscricoes` | Contador (`lastCodigo`) usado para gerar os códigos `CJ2026-XXXX`. |
 | `counters/vestibular` | Contador (`lastCodigo`) usado para gerar os códigos `VB2026-XXXX`. |
@@ -87,6 +88,10 @@ Tela standalone (não usa o Header/Footer do site) para marcar presença dos ins
 > Resetar o sistema (apagar todos os dados) significa apagar as coleções `inscricoes`, `vestibular` e `counters` no Firestore Console — elas são recriadas automaticamente na próxima inscrição.
 
 > ⚠️ **Virada de ano/edição (ex: 2025 → 2026)**: o prefixo do código (`CJ2026-`/`VB2026-`) já está atualizado no código-fonte, mas o **número sequencial não reinicia sozinho** — ele continua de onde parou em `counters/inscricoes` / `counters/vestibular`. Se a intenção é a nova edição começar em `CJ2026-0001`/`VB2026-0001`, é preciso apagar (ou zerar o campo `lastCodigo` de) esses dois documentos no Firestore Console antes de abrir as inscrições.
+
+### Regras de segurança
+
+As regras ficam em [firestore.rules](firestore.rules) e são publicadas manualmente (Firebase Console → Firestore Database → Regras). Como o site não usa Firebase Auth, a **leitura continua pública**; as regras só impedem apagar documentos, sobrescrever inscrições (no Coral, apenas `presencas` pode ser alterado), alterar flags/vagas e pular números nos contadores. Apagar ou zerar dados (reset, virada de edição) continua possível pelo Console, que ignora as regras.
 
 ## Variáveis de Ambiente
 

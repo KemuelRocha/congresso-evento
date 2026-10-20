@@ -25,13 +25,34 @@ export async function salvarInscricao(dados: any) {
       return { success: false, error: "Informe o número do cartão de membro" };
     }
 
-    // ⚠️ Aviso (não bloqueia) se o WhatsApp já foi usado em outra inscrição
-    const whatsappQ = query(
-      inscricoesRef,
-      where("whatsapp", "==", dados.whatsapp),
-      limit(1)
+    // Nome sem acentos, minúsculo e com espaços simples (para comparar duplicidade)
+    const nomeNormalizado = String(dados.nome ?? "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/\s+/g, " ")
+      .trim();
+
+    // ⚠️ Aviso (não bloqueia) se nome ou WhatsApp já aparecem em outra inscrição
+    const [porWhatsapp, porNome] = await Promise.all([
+      getDocs(
+        query(inscricoesRef, where("whatsapp", "==", dados.whatsapp), limit(5))
+      ),
+      getDocs(
+        query(
+          inscricoesRef,
+          where("nomeNormalizado", "==", nomeNormalizado),
+          limit(5)
+        )
+      ),
+    ]);
+    const possiveisDuplicadas = Array.from(
+      new Set(
+        [...porWhatsapp.docs, ...porNome.docs]
+          .map((d) => d.data().codigo as string)
+          .filter(Boolean)
+      )
     );
-    const whatsappExistente = !(await getDocs(whatsappQ)).empty;
 
     // 🔄 O cartão é o ID do documento: a transação impede duplicatas mesmo com envios simultâneos
     const newDoc = doc(inscricoesRef, cartao);
@@ -63,6 +84,8 @@ export async function salvarInscricao(dados: any) {
       transaction.set(newDoc, {
         ...dados,
         cartaoMembro: cartao,
+        nomeNormalizado,
+        possiveisDuplicadas,
         codigo,
         createdAt: serverTimestamp(),
       });
@@ -70,7 +93,11 @@ export async function salvarInscricao(dados: any) {
       return codigo;
     });
 
-    return { success: true, codigo, whatsappExistente };
+    return {
+      success: true,
+      codigo,
+      possivelDuplicada: possiveisDuplicadas.length > 0,
+    };
   } catch (err) {
     if (err instanceof Error && err.message === "CARTAO_DUPLICADO") {
       return {
