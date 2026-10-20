@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useId } from "react";
-import { FieldLabel } from "./Input";
+import { FieldLabel, FieldMessage } from "./Input";
 
 interface SegmentedControlProps {
   label?: string;
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
+  error?: string;
 }
 
 // Grupo de opções lado a lado (substitui um <select> com poucas opções)
@@ -16,6 +17,7 @@ export function SegmentedControl({
   value,
   onChange,
   options,
+  error,
 }: SegmentedControlProps) {
   const id = useId();
 
@@ -26,7 +28,12 @@ export function SegmentedControl({
         id={id}
         role="radiogroup"
         aria-label={label}
-        className="grid h-11 gap-1 rounded-xl border border-neutral-300 bg-neutral-50 p-1"
+        aria-invalid={!!error}
+        tabIndex={-1}
+        className={[
+          "grid h-11 gap-1 rounded-xl border bg-neutral-50 p-1 focus:outline-none",
+          error ? "border-error ring-4 ring-error/15" : "border-neutral-300",
+        ].join(" ")}
         style={{ gridTemplateColumns: `repeat(${options.length}, 1fr)` }}
       >
         {options.map((opt) => {
@@ -51,6 +58,7 @@ export function SegmentedControl({
           );
         })}
       </div>
+      <FieldMessage error={error} />
     </div>
   );
 }
