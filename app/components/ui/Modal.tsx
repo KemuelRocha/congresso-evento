@@ -42,12 +42,14 @@ export const Modal: React.FC<ModalProps> = ({
           exit={{ opacity: 0 }}
           onClick={onClose} // fechar ao clicar no fundo
         >
-          {/* No celular abre como "bottom sheet"; no desktop, centralizado */}
+          {/* No celular abre como "bottom sheet"; no desktop, centralizado.
+              dvh (e não vh) desconta a barra do navegador no celular,
+              senão o topo do modal fica escondido */}
           <motion.div
             role="dialog"
             aria-modal="true"
             aria-label={title}
-            className="relative flex w-full max-w-lg flex-col max-h-[92vh] sm:max-h-[88vh] overflow-hidden rounded-t-3xl sm:rounded-3xl bg-white text-neutral-900 shadow-elevated"
+            className="relative flex w-full max-w-lg flex-col max-h-[92dvh] sm:max-h-[88dvh] overflow-hidden rounded-t-3xl sm:rounded-3xl bg-white text-neutral-900 shadow-elevated"
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 40, opacity: 0 }}

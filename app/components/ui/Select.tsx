@@ -16,7 +16,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     const selectId = id ?? autoId;
 
     return (
-      <div>
+      <div className="min-w-0">
         {label && <FieldLabel htmlFor={selectId}>{label}</FieldLabel>}
         <div className="relative">
           <select

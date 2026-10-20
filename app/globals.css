@@ -150,6 +150,20 @@
   }
 }
 
+/* Safari do iPhone: o input de data ignora width:100% e estoura o container */
+@supports (-webkit-touch-callout: none) {
+  input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    min-width: 0;
+    line-height: 2.75rem;
+  }
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

@@ -54,7 +54,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const inputId = id ?? autoId;
 
     return (
-      <div>
+      <div className="min-w-0">
         {label && <FieldLabel htmlFor={inputId}>{label}</FieldLabel>}
         <input
           ref={ref}
