@@ -55,6 +55,7 @@ Dashboard interno com login, filtros, tabelas, exportação CSV e gráficos para
   - Exportação CSV dos resultados filtrados.
   - Gráficos (Recharts): por área, por congregação, por sexo, por faixa etária, jovens × lideranças.
   - Seção equivalente para `vestibular`: busca/filtros/paginação, exportação CSV, link para o comprovante enviado (com conversão automática de PDF para thumbnail JPG via Cloudinary), gráfico por área.
+  - Aba **Presenças** ([app/components/admin/PresencasTab.tsx](app/components/admin/PresencasTab.tsx)): gestão das presenças nos ensaios do Grande Coral. Primeiro se escolhe uma das datas com presença registrada (cards + gráfico de histórico clicável); a partir dela a aba mostra KPIs (presentes, ausentes, taxa de presença, variação vs ensaio anterior, quem veio pela primeira vez, idade média), gráficos (por área, taxa por área, por congregação, sexo, jovens × lideranças, faixa etária, assiduidade e ranking de congregações), filtros (busca, área, congregação, sexo, liderança, faixa etária, frequência e Presentes/Ausentes/Todos) e uma tabela ordenável. Exporta a lista filtrada e um resumo por congregação em CSV (separador `;` e BOM UTF-8, para abrir em colunas e com acentos no Excel em português). Ausentes são os inscritos que já estavam inscritos na data do ensaio e não marcaram presença. Usa os mesmos dados de `inscricoes` já carregados pelo painel, sem consulta extra.
 - **Depende de**: coleções `inscricoes`, `vestibular`, `vagas/total`.
 
 ### 6. Check-in / Registro de Presença — `/presenca`
@@ -62,7 +63,7 @@ Dashboard interno com login, filtros, tabelas, exportação CSV e gráficos para
 Tela standalone (não usa o Header/Footer do site) para marcar presença dos inscritos nos ensaios do Grande Coral.
 
 - **Acesso**: público — **qualquer pessoa com o link consegue marcar presença**, não há login. Se isso não for desejado, considere restringir o acesso (fora do escopo deste refactor visual).
-- **O que faz**: busca o inscrito por nome ou código (`useFindInscrito`) ou via leitura de QR Code (`QRScanner.tsx`, usando `@zxing/browser`); ao confirmar, grava `presencas.<data ISO>: true` no documento correspondente em `inscricoes`. A tela reseta automaticamente 5 segundos após confirmar.
+- **O que faz**: busca o inscrito por nome ou código (`useFindInscrito`) ou via leitura de QR Code (`QRScanner.tsx`, usando `@zxing/browser`); ao confirmar, grava `presencas.<AAAA-MM-DD>: true` no documento correspondente em `inscricoes`, usando a data **local** do dispositivo (`dataLocalISO`, em [app/utils/datas.ts](app/utils/datas.ts)). Até novembro/2026 a data era gerada em UTC, então check-ins feitos depois das 21h (horário de Brasília) ficaram registrados com a data do dia seguinte. Esses registros antigos aparecem como uma data separada na aba Presenças do `/adm`. A tela reseta automaticamente 5 segundos após confirmar.
 - **Depende de**: coleção `inscricoes`.
 
 ## Rotas de API

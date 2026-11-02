@@ -7,6 +7,7 @@ import { QRScanner } from "../components/QRScanner";
 import { Card } from "../components/ui/Card";
 import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
+import { dataLocalISO } from "../utils/datas";
 
 export default function PresencaPage() {
   const [input, setInput] = useState("");
@@ -19,7 +20,7 @@ export default function PresencaPage() {
   async function marcarPresenca() {
     if (!inscritoSelecionado) return;
 
-    const hoje = new Date().toISOString().split("T")[0];
+    const hoje = dataLocalISO();
     const ref = doc(db, "inscricoes", inscritoSelecionado.id);
 
     await updateDoc(ref, {

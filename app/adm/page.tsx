@@ -37,31 +37,17 @@ import {
   TableHeaderCell,
 } from "../components/ui/Table";
 
-// Tipagem básica
-interface Inscricao {
-  id: string;
-  codigo?: string;
-  nome: string;
-  sexo: string;
-  idade: number;
-  area: number;
-  congregacao: string;
-  lideranca: string;
-  whatsapp: string;
-  fardamentoCiente?: boolean; // não coletado a partir de 2026 (fardamento passou a ser só a camisa oficial)
-  cartaoMembro: string;
-  possiveisDuplicadas?: string[]; // códigos de inscrições com mesmo nome/WhatsApp
-  createdAt?: any; // Timestamp do Firestore
-}
+import { Inscricao } from "../types/inscricao";
+import { PresencasTab } from "../components/admin/PresencasTab";
 
 export default function AdminDashboard() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
 
-  const [activeTab, setActiveTab] = useState<"coral" | "vestibular" | "jogral">(
-    "coral"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "coral" | "presencas" | "vestibular" | "jogral"
+  >("coral");
 
   const [inscricoes, setInscricoes] = useState<Inscricao[]>([]);
   const [totalVagas, setTotalVagas] = useState<number | null>(null);
@@ -589,6 +575,7 @@ export default function AdminDashboard() {
       <div className="flex flex-wrap gap-2 mb-8 border-b border-neutral-200">
         {[
           { key: "coral" as const, label: "🎶 Grande Coral" },
+          { key: "presencas" as const, label: "✅ Presenças" },
           { key: "vestibular" as const, label: "📚 Vestibular" },
           { key: "jogral" as const, label: "🎤 Jogral" },
         ].map((tab) => (
@@ -972,6 +959,8 @@ export default function AdminDashboard() {
       </div>
       </>
       )}
+
+      {activeTab === "presencas" && <PresencasTab inscricoes={inscricoes} />}
 
       {activeTab === "vestibular" && (
       <div className="bg-white p-6 rounded-2xl shadow">
