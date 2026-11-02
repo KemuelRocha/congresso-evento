@@ -14,8 +14,14 @@ export default function PresencaPage() {
   const [inscritoSelecionado, setInscritoSelecionado] = useState<any>(null);
   const [confirmado, setConfirmado] = useState(false);
   const [modoQR, setModoQR] = useState(false);
+  const [buscado, setBuscado] = useState(false);
 
   const { inscritos, buscar, loading, limpar } = useFindInscrito();
+
+  function pesquisar(valor: string) {
+    setBuscado(valor.trim() !== "");
+    buscar(valor);
+  }
 
   async function marcarPresenca() {
     if (!inscritoSelecionado) return;
@@ -37,6 +43,7 @@ export default function PresencaPage() {
         setConfirmado(false);
         setInput("");
         setInscritoSelecionado(null);
+        setBuscado(false);
         limpar();
       }, 5000); // 5 segundos
       return () => clearTimeout(timer);
@@ -44,7 +51,7 @@ export default function PresencaPage() {
   }, [confirmado, limpar]);
 
   function handleScan(value: string) {
-    buscar(value);
+    pesquisar(value);
     setModoQR(false);
   }
 
@@ -69,12 +76,15 @@ export default function PresencaPage() {
                 <Input
                   placeholder="Digite seu nome ou código"
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    setBuscado(false);
+                  }}
                 />
                 <Button
                   variant="primary"
                   fullWidth
-                  onClick={() => buscar(input)}
+                  onClick={() => pesquisar(input)}
                   disabled={loading}
                 >
                   Buscar
@@ -91,6 +101,19 @@ export default function PresencaPage() {
 
             {loading && (
               <p className="mt-4 text-neutral-700">⏳ Procurando...</p>
+            )}
+
+            {/* Nenhum inscrito encontrado */}
+            {buscado && !loading && inscritos.length === 0 && !inscritoSelecionado && !confirmado && (
+              <div className="mt-6 rounded-lg border border-accent-300 bg-accent-50 p-4 text-left">
+                <p className="font-bold text-accent-800">
+                  Não encontramos sua inscrição.
+                </p>
+                <p className="mt-1 text-sm text-neutral-700">
+                  Confira o nome ou o código digitado. Se ainda assim não
+                  aparecer, procure a organização do ensaio.
+                </p>
+              </div>
             )}
 
             {/* Lista de inscritos */}
@@ -146,6 +169,7 @@ export default function PresencaPage() {
                     setConfirmado(false);
                     setInput("");
                     setInscritoSelecionado(null);
+                    setBuscado(false);
                     limpar();
                   }}
                 >
