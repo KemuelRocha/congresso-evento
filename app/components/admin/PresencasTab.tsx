@@ -25,6 +25,8 @@ import {
 } from "lucide-react";
 import { Inscricao } from "../../types/inscricao";
 import { dataLocalISO, formatDataBR, parseDataISO } from "../../utils/datas";
+import { montarRelatorioEnsaio } from "../../utils/relatorioEnsaio";
+import { RelatorioWhatsApp } from "./RelatorioWhatsApp";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
@@ -519,6 +521,44 @@ export function PresencasTab({ inscricoes }: { inscricoes: Inscricao[] }) {
     );
   }
 
+  const mediaPorEnsaio = historico.length
+    ? historico.reduce((a, h) => a + h.presentes, 0) / historico.length
+    : null;
+
+  const descricaoFiltro = [
+    areaFilter !== "all" && `Área ${areaFilter}`,
+    congregFilter !== "all" && congregFilter,
+    sexoFilter !== "all" && sexoLabel(sexoFilter),
+    liderFilter !== "all" && (liderFilter === "lider" ? "Lideranças" : "Jovens"),
+    faixaFilter !== "all" && `${faixaFilter} anos`.replace("Menores de 18 anos", "Menores de 18"),
+    freqFilter !== "all" &&
+      (freqFilter === "0" ? "Nunca foram a um ensaio" : `Foram a ${freqFilter}+ ensaios`),
+    search.trim() && `Busca: "${search.trim()}"`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  const relatorio = montarRelatorioEnsaio({
+    data: dataAtual,
+    filtro: descricaoFiltro || undefined,
+    presentes: totalPresentes,
+    ausentes: totalAusentes,
+    inscritos: registros.length,
+    dataAnterior,
+    presentesAnterior,
+    primeiraVez,
+    idadeMedia,
+    porSexo,
+    porLideranca,
+    porArea,
+    porCongregacao,
+    melhores,
+    piores,
+    mediaPorEnsaio,
+    totalEnsaios: historico.length,
+    listarSemPresentes: areaFilter !== "all",
+  });
+
   const SortHeader = ({ k, children }: { k: SortKey; children: React.ReactNode }) => (
     <TableHeaderCell>
       <button
@@ -751,16 +791,12 @@ export function PresencasTab({ inscricoes }: { inscricoes: Inscricao[] }) {
         />
         <KpiCard
           titulo="Média por ensaio"
-          valor={
-            historico.length
-              ? (
-                  historico.reduce((a, h) => a + h.presentes, 0) / historico.length
-                ).toFixed(1).replace(".", ",")
-              : "-"
-          }
+          valor={mediaPorEnsaio !== null ? mediaPorEnsaio.toFixed(1).replace(".", ",") : "-"}
           detalhe={`em ${historico.length} ${historico.length === 1 ? "ensaio" : "ensaios"}`}
         />
       </div>
+
+      <RelatorioWhatsApp texto={relatorio} />
 
       {/* Gráficos */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
